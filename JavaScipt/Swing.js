@@ -12,4 +12,11 @@ document.getElementById('logout-yes').addEventListener('click', () => {
 document.getElementById('logout-no').addEventListener('click', () => {
   modal.classList.add('off');
 });
+
+// Add event listener to close modal when clicking outside
+document.addEventListener('click', (e) => {
+  if (e.target === modal || e.target.classList.contains('logout-modal')) {
+    modal.classList.add('off');
+  }
+});
 // -----------------------------------------

@@ -1,0 +1,43 @@
+.login-back {
+    background-image: url(../Backround/Login/Background.jpg);
+    background-position: center;
+    background-size: cover;
+}
+
+.box {
+    background-color: transparent;
+    background-image: none;
+    backdrop-filter: blur(50px);
+}
+.box .title {
+    text-align: center;
+    color: var(--delft-blue);
+}
+.box .align {
+    color: var(--delft-blue);
+}
+
+.input {
+    width: 100%;
+    padding: 10px 20px;
+    outline: none;
+    border: none;
+    border-radius: 15px;
+}
+
+#login {
+    margin-top: 5px;
+    padding: 10px 20px;
+    background-color: var(--our-blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;
+}
+#login:hover {
+    background-color: #007bff;
+}
+#login:active {
+    scale: 0.9;
+}

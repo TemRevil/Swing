@@ -40,6 +40,7 @@
     --alice-blue: #eaf6ffff;
     --mint-cream: #f4fffdff;
     --mint-green: #e9fff9ff;
+    --our-blue: #3395ffff;
     --picton-blue: #4ea5d9ff;
     --deep-sky-blue: #00bbf9ff;
     --cerulian: #0075a2ff;
@@ -156,6 +157,9 @@ p {
     background-color: var(--alice-blue);
     background-image: linear-gradient(160deg, var(--alice-blue) 50%, #f3e8ee 100%);
     border-radius: 25px;
+}
+#alert {
+    height: 25px;
 }
 /* ------------------------------------------ */
 .red-btn {
