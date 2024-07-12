@@ -1,0 +1,208 @@
+@font-face {
+    font-family: 'Cairo';
+    font-weight: 300;
+    src: url(../Fonts/Cairo/static/Cairo-Regular.ttf);
+}
+@font-face {
+    font-family: 'Cairo';
+    font-weight: 700;
+    src: url(../Fonts/Cairo/static/Cairo-Bold.ttf);
+}
+@font-face {
+    font-family: 'Rubik';
+    font-weight: 300;
+    src: url(../Fonts/Rubik/static/Rubik-Regular.ttf);
+}
+@font-face {
+    font-family: 'Rubik';
+    font-weight: 700;
+    src: url(../Fonts/Rubik/static/Rubik-Bold.ttf);
+}
+@font-face {
+    font-family: 'Exo';
+    font-weight: 300;
+    src: url(../Fonts/Exo/static/Exo2-Regular.ttf);
+}
+@font-face {
+    font-family: 'Exo';
+    font-weight: 700;
+    src: url(../Fonts/Exo/static/Exo2-Bold.ttf);
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root {
+    --poppy: #d64045ff;
+    --alice-blue: #eaf6ffff;
+    --mint-cream: #f4fffdff;
+    --mint-green: #e9fff9ff;
+    --picton-blue: #4ea5d9ff;
+    --deep-sky-blue: #00bbf9ff;
+    --cerulian: #0075a2ff;
+    --marian-blue: #2a4494ff;
+    --delft-blue: #1d3354ff;
+    --oxford-blue: #011936ff;
+    --raisin-black: #191923ff;
+}
+
+body {
+    width: 100%;
+    background-color: white;
+}
+body::-webkit-scrollbar {
+    width: 6px;
+}
+body::-webkit-scrollbar-track {
+    background-color: #ebf6ff;
+}
+body::-webkit-scrollbar-thumb {
+    background-color: #3395ff;
+    border-radius: 20px;
+}
+::selection {
+    background-color: #3396ffb4;
+    color: white;
+}
+
+.w {
+    width: 100%;
+}
+
+.flex {
+    display: flex;
+}
+.row {
+    flex-direction: row;
+}
+.col {
+    flex-direction: column;
+}
+.center {
+    justify-content: center;
+    align-items: center;
+}
+.between {
+    justify-content: space-between;
+}
+.evenly {
+    justify-content: space-evenly;
+}
+.around {
+    justify-content: space-around;
+}
+.flex-end {
+    justify-content: flex-end;
+}
+.gap {
+    gap: 10px;
+}
+
+.off {
+    display: none !important;
+}
+
+.img img {
+    width: 100%;
+}
+
+p {
+    text-transform: capitalize;
+}
+.title {
+    font-family: 'Exo', 'Rubik', 'Cairo';
+    font-weight: 700;
+    font-size: 52px;
+    color: #124;
+    transition: 0.2s 0s linear;
+}
+.align {
+    font-family: 'Exo', 'Rubik', 'Cairo';
+    font-weight: 700;
+    font-size: 32px;
+    color: #124;
+    transition: 0.2s 0s linear;
+}
+.text {
+    font-family: 'Rubik', 'Exo', 'Cairo';
+    font-weight: 100;
+    font-size: 22px;
+    color: #124;
+    transition: 0.2s 0s linear;
+}
+.links {
+    text-decoration: none;
+    font-family: 'Cairo', 'Exo', 'Rubik';
+    font-weight: 900;
+    font-size: 22px;
+    color: #124;
+    transition: 0.2s 0s linear;
+}
+.links:hover {
+    text-decoration: solid;
+}
+
+.transition {
+    transition: 0.15s 0s ease-in-out;
+}
+/* ------------------------------------------ */
+.box {
+    width: 450px;
+    min-height: 250px;
+    padding: 20px;
+    background-color: var(--alice-blue);
+    background-image: linear-gradient(160deg, var(--alice-blue) 50%, #f3e8ee 100%);
+    border-radius: 25px;
+}
+/* ------------------------------------------ */
+.red-btn {
+    min-width: 50px;
+    padding: 5px;
+    background-color: transparent;
+    color: var(--poppy);
+    border: 2px var(--poppy) solid;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;
+}
+.red-btn:hover {
+    background-color: var(--poppy);
+    color: white;
+}
+.red-btn:active {
+    scale: 0.9;
+}
+
+.blue-btn {
+    min-width: 50px;
+    padding: 5px;
+    background-color: transparent;
+    color: var(--picton-blue);
+    border: 2px var(--picton-blue) solid;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;
+}
+.blue-btn:hover {
+    background-color: var(--picton-blue);
+    color: white;
+}
+.blue-btn:active {
+    scale: 0.9;
+}
+/* ------------------------------------------ */
+.wh {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 5;
+}
+.modal {
+    background-color: #050b2bb2;
+}

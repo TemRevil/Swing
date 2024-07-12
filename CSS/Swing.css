@@ -1,0 +1,16 @@
+nav {
+    height: 60px;
+    padding: 10px;
+}
+
+.aside {
+    width: 40px;
+    min-height: 93vh;
+}
+
+.main-menu {
+    width: calc(100% - 50px);
+    min-height: 93vh;
+    background-color: #EAF6FF;
+    border-top-left-radius: 15px;
+}
