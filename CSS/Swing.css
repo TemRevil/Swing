@@ -2,15 +2,68 @@ nav {
     height: 60px;
     padding: 10px;
 }
-
+/* ------------------------------------------ */
 .aside {
-    width: 55px;
+    width: 60px;
     min-height: 93vh;
+    padding: 10px;
+    justify-content: space-between;
 }
-
-.main-menu {
+.aside-button {
+    width: 100%;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;    
+}
+.aside-button:hover {
+    background-color: #050b2b20;
+}
+.aside-button:active {
+    scale: 0.9;
+}
+.aside-button img {
+    width: 100%;
+}
+/* ------------------------------------------ */
+.main-view {
     width: calc(100% - 50px);
     min-height: 93vh;
     background-color: #EAF6FF;
     border-top-left-radius: 15px;
+}
+/* ------------------------------------------ */
+.menu {
+    padding: 10px;
+}
+
+.menu-kinds {
+    overflow-x: auto;
+    -ms-overflow-style: none; /* for IE and Edge */
+    scrollbar-width: none; /* for Firefox */
+}
+.menu-kinds::-webkit-scrollbar {
+    display: none;
+}
+.kind-box {
+    min-width: 100px;
+    max-width: 100px;
+    height: 100px;
+    padding: 10px;
+    font-size: 18px;
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;
+}
+.kind-box:active {
+    scale: 0.95;
+}
+.kind-box.active {
+    background-color: #3395ff;
+    background-image: linear-gradient(36deg, var(--our-blue) 60%, var(--deep-sky-blue) 100%);
+    color: white;
 }

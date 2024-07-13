@@ -23,9 +23,24 @@
         <button class="red-btn text" id="logout-modal">LOGOUT</button>
     </nav>
     <section class="w flex row">
-        <div class="aside flex col"></div>
-        <div class="main-menu">
-            
+        <div class="aside flex col">
+            <div class="flex col center gap">
+              <button class="aside-button" id="menu"><img src="Backround/Icons/Menu.png" alt="Menu"></button>
+              <button class="aside-button" id="orders"><img src="Backround/Icons/Orders.png" alt="Orders"></button>
+              <button class="aside-button" id="stocks"><img src="Backround/Icons/Stocks.png" alt="Stocks"></button>
+            </div>
+            <button class="aside-button" id="settings"><img src="Backround/Icons/Settings.png" alt="Settings"></button>
+        </div>
+        <div class="main-view">
+            <section class="menu w flex col">
+                <div class="menu-kinds w flex row gap">
+                    <button class="kind-box flex center text" id="offers">Offers</button>
+                    <button class="kind-box flex center text active" id="beef">Beef</button>
+                    <button class="kind-box flex center text" id="fried-chicken">Fried Chicken</button>
+                    <button class="kind-box flex center text" id="drinks">Drinks</button>
+                    <button class="kind-box flex center text" id="side-items">Side-Items</button>
+                </div>
+            </section>
         </div>
     </section>
     <div class="modal wh logout-modal off">
