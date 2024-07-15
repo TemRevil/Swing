@@ -26,39 +26,29 @@ let isDown = false;
 let startX;
 let scrollLeft;
 
-menuKinds.addEventListener('mousedown', (e) => {
+const handleMouseDown = (e) => {
   isDown = true;
-  startX = e.pageX;
+  startX = e.type === 'touchstart'? e.touches[0].pageX : e.pageX;
   scrollLeft = menuKinds.scrollLeft;
-});
+};
 
-menuKinds.addEventListener('touchstart', (e) => {
-  isDown = true;
-  startX = e.touches[0].pageX;
-  scrollLeft = menuKinds.scrollLeft;
-});
-
-menuKinds.addEventListener('mousemove', (e) => {
+const handleMouseMove = (e) => {
   if (!isDown) return;
-  const x = e.pageX;
+  const x = e.type === 'touchmove'? e.touches[0].pageX : e.pageX;
   const walk = x - startX;
   menuKinds.scrollLeft = scrollLeft - walk;
-});
+};
 
-menuKinds.addEventListener('touchmove', (e) => {
-  if (!isDown) return;
-  const x = e.touches[0].pageX;
-  const walk = x - startX;
-  menuKinds.scrollLeft = scrollLeft - walk;
-});
-
-menuKinds.addEventListener('mouseup', () => {
+const handleMouseUp = () => {
   isDown = false;
-});
+};
 
-menuKinds.addEventListener('touchend', () => {
-  isDown = false;
-});
+menuKinds.addEventListener('mousedown', handleMouseDown);
+menuKinds.addEventListener('touchstart', handleMouseDown);
+menuKinds.addEventListener('mousemove', handleMouseMove);
+menuKinds.addEventListener('touchmove', handleMouseMove);
+menuKinds.addEventListener('mouseup', handleMouseUp);
+menuKinds.addEventListener('touchend', handleMouseUp);
 
 const kindBoxes = menuKinds.querySelectorAll('.kind-box');
 
@@ -66,6 +56,24 @@ kindBoxes.forEach((kindBox) => {
   kindBox.addEventListener('click', () => {
     kindBoxes.forEach((kb) => kb.classList.remove('active'));
     kindBox.classList.add('active');
+  });
+});
+
+const menuItems = document.querySelectorAll('.main-menu > div');
+
+kindBoxes.forEach((kindBox) => {
+  kindBox.addEventListener('click', () => {
+    kindBoxes.forEach((kb) => kb.classList.remove('active'));
+    kindBox.classList.add('active');
+
+    const id = kindBox.id;
+    menuItems.forEach((menuItem) => {
+      if (menuItem.classList.contains(id)) {
+        menuItem.classList.remove('off');
+      } else {
+        menuItem.classList.add('off');
+      }
+    });
   });
 });
 // -----------------------------------------
@@ -89,6 +97,7 @@ buttons.forEach(button => {
     // Change the src attribute back to .png after 0.4 seconds
     setTimeout(() => {
       img.src = img.src.replace('.gif', '.png');
-    }, 1300);
+    }, 950);
   });
 });
+// -----------------------------------------

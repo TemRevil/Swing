@@ -82,6 +82,9 @@ body::-webkit-scrollbar-thumb {
 .col {
     flex-direction: column;
 }
+.wrap {
+    flex-wrap: wrap;
+}
 .center {
     justify-content: center;
     align-items: center;
@@ -146,6 +149,12 @@ p {
     text-decoration: solid;
 }
 
+hr {
+    margin: 10px 0px;
+    border: 2px #11224440 solid;
+    border-radius: 20px;
+}
+
 .transition {
     transition: 0.15s 0s ease-in-out;
 }
@@ -195,6 +204,20 @@ p {
     color: white;
 }
 .blue-btn:active {
+    scale: 0.9;
+}
+
+.blue-btn-2 {
+    min-width: 90px;
+    padding: 5px;
+    background-color: var(--our-blue);
+    color: white;
+    border: 2px var(--our-blue) solid;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.15s 0s ease-in-out;
+}
+.blue-btn-2:active {
     scale: 0.9;
 }
 /* ------------------------------------------ */
