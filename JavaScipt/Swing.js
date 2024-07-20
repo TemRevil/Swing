@@ -1,5 +1,5 @@
 // Swing Guradian
-import { db, doc, getDoc, deleteDoc } from './Firebase.js';
+import { db, doc, getDoc, deleteDoc, setDoc } from './Firebase.js';
 
 // Get the username from local storage
 const username = localStorage.getItem('username');
@@ -39,10 +39,30 @@ document.getElementById('logout-yes').addEventListener('click', logout);
 async function logout() {
   const username = localStorage.getItem('username');
   const loginCodeRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
+  const dailyLoginRef = doc(db, 'DailyLogin', `${username}/${new Date().getMonth() + 1} - ${new Date().toLocaleString('en-US', { month: 'long' })}`, `${new Date().getDate()} - ${new Date().toLocaleString('en-US', { weekday: 'long' })}`);
 
   try {
     await deleteDoc(loginCodeRef);
     localStorage.removeItem('username');
+
+    // Add logout time and count to the daily login document
+    const dailyLoginSnap = await getDoc(dailyLoginRef);
+    if (dailyLoginSnap.exists()) {
+      await setDoc(dailyLoginRef, {
+        count: dailyLoginSnap.data().count,
+        loginTimes: dailyLoginSnap.data().loginTimes,
+        logoutTimes: [...(dailyLoginSnap.data().logoutTimes || []), new Date().toLocaleTimeString()],
+        logoutCount: (dailyLoginSnap.data().logoutCount || 0) + 1,
+      }, { merge: true });
+    } else {
+      await setDoc(dailyLoginRef, {
+        count: 0,
+        loginTimes: [],
+        logoutTimes: [new Date().toLocaleTimeString()],
+        logoutCount: 1,
+      });
+    }
+
     window.location.href = 'Login.html';
   } catch (error) {
     console.error('Error deleting login code:', error);
