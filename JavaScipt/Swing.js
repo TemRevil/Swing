@@ -1,22 +1,76 @@
-// Logout Event
-const modal = document.querySelector('.modal.logout-modal');
+// Swing Guradian
+import { db, doc, getDoc, deleteDoc } from './Firebase.js';
 
-document.getElementById('logout-modal').addEventListener('click', () => {
-  modal.classList.remove('off');
+// Get the username from local storage
+const username = localStorage.getItem('username');
+
+// Check if the login code is valid
+const loginCodeRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
+getDoc(loginCodeRef).then((doc) => {
+  if (!doc.exists()) {
+    // If no code is found, redirect to Login.html
+    window.location.href = 'Login.html';
+  } else {
+    const loginCode = doc.data().code;
+    // Verify the code (you can add your own verification logic here)
+    const isValidCode = verifyLoginCode(loginCode);
+
+    if (!isValidCode) {
+      // If the code is invalid, redirect to Login.html
+      window.location.href = 'Login.html';
+    } else {
+      // If the code is valid, allow access to Swing.html
+      console.log('Welcome to Swing.html!');
+    }
+  }
+}).catch((error) => {
+  console.error('Error getting login code:', error);
 });
 
-document.getElementById('logout-yes').addEventListener('click', () => {
-  window.location.href = 'Login.html';
+// Example verification function (you can modify this to fit your needs)
+function verifyLoginCode(code) {
+  // For demonstration purposes, let's say the code is valid if it's at least 8 characters long
+  return code.length >= 8;
+}
+// -----------------------------------------
+// Auth Gurdian Helper
+document.getElementById('logout-yes').addEventListener('click', logout);
+
+async function logout() {
+  const username = localStorage.getItem('username');
+  const loginCodeRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
+
+  try {
+    await deleteDoc(loginCodeRef);
+    localStorage.removeItem('username');
+    window.location.href = 'Login.html';
+  } catch (error) {
+    console.error('Error deleting login code:', error);
+  }
+}
+// -----------------------------------------
+// Nav Greeting Message
+window.addEventListener('load', () => {
+  const username = localStorage.getItem('username');
+  const greetingElement = document.getElementById('greeting');
+  greetingElement.textContent = `Hello, ${username}!`;
+});
+// -----------------------------------------
+// Logout Event
+const logoutModal = document.querySelector('.logout-modal');
+
+document.getElementById('logout-modal').addEventListener('click', () => {
+  logoutModal.classList.remove('off');
 });
 
 document.getElementById('logout-no').addEventListener('click', () => {
-  modal.classList.add('off');
+  logoutModal.classList.add('off');
 });
 
-// Add event listener to close modal when clicking outside
+// Add event listener to close logoutModal when clicking outside
 document.addEventListener('click', (e) => {
-  if (e.target === modal || e.target.classList.contains('logout-modal')) {
-    modal.classList.add('off');
+  if (e.target === logoutModal || e.target.classList.contains('logout-modal')) {
+    logoutModal.classList.add('off');
   }
 });
 // -----------------------------------------

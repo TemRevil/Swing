@@ -19,19 +19,20 @@
 </head>
 <body>
     <section class="login-back wh flex center">
-        <div class="box flex col">
-          <p class="title">Login</p>
-          <form class="w flex col gap" id="login-form">
-            <p class="align">Username</p>
-            <input type="text" name="username" id="username" class="input text" placeholder="Username" required>
-            <p class="align">Password</p>
-            <input type="password" name="password" id="password" class="input text" placeholder="Password" required>
-            <p id="alert" class="text"></p>
-            <button class="text" id="login">Login</button>
-          </form>
-        </div>
+      <div class="box flex col">
+        <p class="title">Login</p>
+        <form class="w flex col gap" id="login-form">
+          <p class="align">Username</p>
+          <input type="text" name="username" id="username" class="input text" placeholder="Username" required>
+          <p class="align">Password</p>
+          <input type="password" name="password" id="password" class="input text" placeholder="Password" required>
+          <p id="alert" class="text"></p>
+          <button type="submit" class="text" id="login">Login</button>
+        </form>
+      </div>
     </section>
     <script src="JavaScipt/all.js"></script>
-    <script src="JavaScipt/Login.js"></script>
+    <script type="module" src="JavaScipt/Firebase.js"></script>
+    <script type="module" src="JavaScipt/Login.js"></script>
 </body>
 </html>

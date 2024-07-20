@@ -20,6 +20,7 @@
 <body class="flex col">
     <nav class="w flex row gap between">
         <p class="align">SWING</p>
+        <p id="greeting" class="align"></p>
         <button class="red-btn text" id="logout-modal">LOGOUT</button>
     </nav>
     <section class="w flex row">
@@ -90,61 +91,66 @@
             </section>
         </div>
     </section>
-    <div class="modal wh order-modal">
-        <div class="box flex col">
-            <div id="order-div-cover">
-                <img id="order-cover" src="Backround/Login/Background.jpg" alt="#">
-                <p id="order-cover-name" class="flex center">Mojito</p>
-            </div>
-            <div class="flex row">
-                <div id="img-order-box" class="img"><img src="Backround/Menu/Mojito.jpg" alt="#"></div>
-                <div id="order-modal-title" class="flex col">
-                    <p class="title">Mojito</p>
-                    <p class="text">Drinks</p>
+    <div class="wh flex center order-modal off">
+        <div class="modal">
+            <div class="box flex col">
+                <div id="order-div-cover">
+                    <img id="order-cover" src="Backround/Login/Background.jpg" alt="#">
+                    <p id="order-cover-name" class="flex center">Mojito</p>
                 </div>
-            </div>
-            <div class="flex col wrap gap pad">
-                <p class="align">Quantitiy</p>
-                <div class="flex row wrap gap">
-                    <button class="blue-btn text"><i class="fa-solid fa-minus"></i></button>
-                    <input type="text" value="1" id="order-quantity" class="text">
-                    <button class="blue-btn text"><i class="fa-solid fa-plus"></i></button>
+                <div class="flex row">
+                    <div id="img-order-box" class="img"><img src="Backround/Menu/Mojito.jpg" alt="#"></div>
+                    <div id="order-modal-title" class="flex col">
+                        <p class="title">Mojito</p>
+                        <p class="text">Drinks</p>
+                    </div>
                 </div>
-                <p class="align">Size</p>
-                <div class="flex row wrap gap">
-                    <button class="choice-btn text">Small</button>
-                    <button class="choice-btn text">Large</button>
+                <div class="flex col gap pad">
+                    <p class="align">Quantitiy</p>
+                    <div class="flex row wrap gap">
+                        <button class="blue-btn text"><i class="fa-solid fa-minus"></i></button>
+                        <input type="text" value="1" id="order-quantity" class="text">
+                        <button class="blue-btn text"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <p class="align">Size</p>
+                    <div class="flex row wrap gap">
+                        <button class="choice-btn text">Small</button>
+                        <button class="choice-btn text">Large</button>
+                    </div>
+                    <p class="align">Flavor</p>
+                    <div class="flex row wrap gap">
+                        <button class="choice-btn text">Strawberry</button>
+                        <button class="choice-btn text">Nutella</button>
+                        <button class="choice-btn text">Lotus</button>
+                        <button class="choice-btn text">Caramel</button>
+                    </div>
                 </div>
-                <p class="align">Flavor</p>
-                <div class="flex row wrap gap">
-                    <button class="choice-btn text">Strawberry</button>
-                    <button class="choice-btn text">Nutella</button>
-                    <button class="choice-btn text">Lotus</button>
-                    <button class="choice-btn text">Caramel</button>
-                </div>
-            </div>
-            <div class="add-order flex row center between">
-                <p id="order-price" class="align">300 EGP</p>
-                <div class="flex row gap">
-                    <button id="close-order-modal" class="blue-btn-2 text">Close</button>
-                    <button id="add-order" class="blue-btn-2 text">Add</button>
+                <div class="add-order flex row center between">
+                    <p id="order-price" class="align">300 EGP</p>
+                    <div class="flex row gap">
+                        <button id="close-order-modal" class="blue-btn-2 text">Close</button>
+                        <button id="add-order" class="blue-btn-2 text">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal wh logout-modal off">
-        <div class="box flex col between">
-            <div class="flex col gap">
-                <p class="align">LOGOUT</p>
-                <p class="text">Are You Sure You Want To?</p>
-            </div>
-            <div class="w flex row flex-end gap">
-                <button class="red-btn text" id="logout-yes">Yes End Season</button>
-                <button class="blue-btn text" id="logout-no">No</button>
+    <div class="wh flex center logout-modal off">
+        <div class="modla">
+            <div class="box flex col between">
+                <div class="flex col gap">
+                    <p class="align">LOGOUT</p>
+                    <p class="text">Are You Sure You Want To?</p>
+                </div>
+                <div class="w flex row flex-end gap">
+                    <button class="red-btn text" id="logout-yes">Yes End Season</button>
+                    <button class="blue-btn text" id="logout-no">No</button>
+                </div>
             </div>
         </div>
     </div>
     <script src="JavaScipt/all.js"></script>
-    <script src="JavaScipt/Swing.js"></script>
+    <script type="module" src="JavaScipt/Firebase.js"></script>
+    <script type="module" src="JavaScipt/Swing.js"></script>
 </body>
 </html>
