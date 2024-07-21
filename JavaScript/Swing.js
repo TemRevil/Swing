@@ -1,39 +1,6 @@
-// Swing Guradian
 import { db, doc, getDoc, deleteDoc, setDoc } from './Firebase.js';
-
-// Get the username from local storage
-const username = localStorage.getItem('username');
-
-// Check if the login code is valid
-const loginCodeRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
-getDoc(loginCodeRef).then((doc) => {
-  if (!doc.exists()) {
-    // If no code is found, redirect to Login.html
-    window.location.href = 'Login.html';
-  } else {
-    const loginCode = doc.data().code;
-    // Verify the code (you can add your own verification logic here)
-    const isValidCode = verifyLoginCode(loginCode);
-
-    if (!isValidCode) {
-      // If the code is invalid, redirect to Login.html
-      window.location.href = 'Login.html';
-    } else {
-      // If the code is valid, allow access to Swing.html
-      console.log('Welcome to Swing.html!');
-    }
-  }
-}).catch((error) => {
-  console.error('Error getting login code:', error);
-});
-
-// Example verification function (you can modify this to fit your needs)
-function verifyLoginCode(code) {
-  // For demonstration purposes, let's say the code is valid if it's at least 8 characters long
-  return code.length >= 8;
-}
 // -----------------------------------------
-// Auth Gurdian Helper
+// Auth Guardian Helper
 document.getElementById('logout-yes').addEventListener('click', logout);
 
 async function logout() {
@@ -49,17 +16,17 @@ async function logout() {
     const dailyLoginSnap = await getDoc(dailyLoginRef);
     if (dailyLoginSnap.exists()) {
       await setDoc(dailyLoginRef, {
-        count: dailyLoginSnap.data().count,
+        loginCount: dailyLoginSnap.data().loginCount,
         loginTimes: dailyLoginSnap.data().loginTimes,
-        logoutTimes: [...(dailyLoginSnap.data().logoutTimes || []), new Date().toLocaleTimeString()],
         logoutCount: (dailyLoginSnap.data().logoutCount || 0) + 1,
+        logoutTimes: [...(dailyLoginSnap.data().logoutTimes || []), new Date().toLocaleTimeString()],
       }, { merge: true });
     } else {
       await setDoc(dailyLoginRef, {
-        count: 0,
+        loginCount: 0,
         loginTimes: [],
-        logoutTimes: [new Date().toLocaleTimeString()],
         logoutCount: 1,
+        logoutTimes: [new Date().toLocaleTimeString()],
       });
     }
 
