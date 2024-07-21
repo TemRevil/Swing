@@ -38,6 +38,11 @@ async function checkLogin(event) {
         });
       }
 
+      // Generate a login code and store it in Firestore
+      const dailyLoginCount = (await getDoc(dailyLoginRef)).data().loginCount;
+      const randomLetters = Array(3).fill(0).map(() => String.fromCharCode(Math.floor(Math.random() * 26) + 65));
+      const loginCode = `${username}-${dayNumber}/${monthNumber}/${currentTime.getFullYear()}-${currentTime.toLocaleTimeString().split(' ')[0].slice(0, 5)}-${dailyLoginCount}-${randomLetters.join('')}`;
+
       // Get the user's IP address
       const ipAddress = await fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
@@ -48,19 +53,25 @@ async function checkLogin(event) {
       const loginAuthSnap = await getDoc(loginAuthRef);
 
       if (loginAuthSnap.exists()) {
-        const existingIpAddresses = Object.values(loginAuthSnap.data()).filter(value => typeof value === 'string' && value.includes('.'));
+        const existingDevices = Object.keys(loginAuthSnap.data()).filter(key => key.startsWith('device'));
 
-        if (!existingIpAddresses.includes(ipAddress)) {
-          // Add a new field for the new device
-          const newIpField = `ipAddress${existingIpAddresses.length + 1}`;
+        if (!existingDevices.some(device => loginAuthSnap.data()[device].ipAddress === ipAddress)) {
+          // Add a new device entry for the new device
+          const newDeviceField = `device${existingDevices.length + 1}`;
           await setDoc(loginAuthRef, {
-            [newIpField]: ipAddress,
+            [newDeviceField]: {
+              code: loginCode,
+              ipAddress: ipAddress,
+            }
           }, { merge: true });
         }
       } else {
         // Create a new LoginAuth document
         await setDoc(loginAuthRef, {
-          ipAddress: ipAddress,
+          device1: {
+            code: loginCode,
+            ipAddress: ipAddress,
+          }
         });
       }
 
