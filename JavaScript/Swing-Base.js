@@ -1,5 +1,24 @@
-import { db, doc, getDoc, setDoc, deleteField, writeBatch } from './Firebase.js';
-
+import { db, doc, getDoc, setDoc, deleteDoc, deleteField, writeBatch } from './Firebase.js';
+// -----------------------------------------
+// Check Login Status
+async function checkLoginStatus() {
+    const username = localStorage.getItem('username');
+    const deviceName = localStorage.getItem('device');
+  
+    if (username && deviceName) {
+      const loginAuthRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
+      const loginAuthSnap = await getDoc(loginAuthRef);
+  
+      if (!loginAuthSnap.exists() || !loginAuthSnap.data()[deviceName]) {
+        alert('Session expired. Please log in again.');
+        localStorage.removeItem('username');
+        localStorage.removeItem('device');
+        window.location.href = 'Login.html';
+      }
+    } else {
+      window.location.href = 'Login.html';
+    }
+  }
 // -----------------------------------------
 // Auth Guardian Helper
 document.getElementById('logout-yes').addEventListener('click', logout);
@@ -46,10 +65,34 @@ async function logout() {
     console.error('Error deleting device field:', error);
   }
 }
+
 // -----------------------------------------
 // Nav Greeting Message
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+  await checkLoginStatus();
   const username = localStorage.getItem('username');
   const greetingElement = document.getElementById('greeting');
-  greetingElement.textContent = `Hello, ${username}!`;
+
+  if (username) {
+    greetingElement.textContent = `Hello, ${username}!`;
+  }
+});
+
+// -----------------------------------------
+// Logout Event
+const logoutModal = document.querySelector('.logout-modal');
+
+document.getElementById('logout-modal').addEventListener('click', () => {
+  logoutModal.classList.remove('off');
+});
+
+document.getElementById('logout-no').addEventListener('click', () => {
+  logoutModal.classList.add('off');
+});
+
+// Add event listener to close logoutModal when clicking outside
+document.addEventListener('click', (e) => {
+  if (e.target === logoutModal || e.target.classList.contains('logout-modal')) {
+    logoutModal.classList.add('off');
+  }
 });
