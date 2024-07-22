@@ -37,6 +37,7 @@ async function checkLogin(event) {
         const deviceData = loginAuthSnap.data()[device];
         if (deviceData.ipAddress === ipAddress && deviceData.domain === domain) {
           isNewDevice = false;
+          localStorage.setItem('device', device);
           break;
         }
       }
@@ -47,7 +48,9 @@ async function checkLogin(event) {
     }
 
     if (isNewDevice) {
-      await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
+      const newDeviceKey = `device${deviceCount}`;
+      await setDoc(loginAuthRef, { [newDeviceKey]: { code: loginCode, ipAddress, domain } }, { merge: true });
+      localStorage.setItem('device', newDeviceKey);
     }
 
     alertElement.textContent = `Hello, ${username}!`;
