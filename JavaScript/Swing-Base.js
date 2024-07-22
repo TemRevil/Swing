@@ -1,4 +1,4 @@
-import { db, doc, getDoc, deleteDoc, setDoc, updateDoc } from './Firebase.js';
+import { db, doc, getDoc, setDoc, deleteField, writeBatch } from './Firebase.js';
 
 // -----------------------------------------
 // Auth Guardian Helper
@@ -12,10 +12,12 @@ async function logout() {
 
   try {
     if (deviceName) {
-      // حذف الحقل الخاص بالجهاز
-      await updateDoc(loginAuthRef, {
-        [deviceName]: deleteDoc()
+      const batch = writeBatch(db);
+      batch.update(loginAuthRef, {
+        [deviceName]: deleteField()
       });
+
+      await batch.commit();
       localStorage.removeItem('device');
     }
 

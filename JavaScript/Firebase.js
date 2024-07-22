@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, setDoc, doc, getDoc, deleteDoc, FieldValue } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getFirestore, setDoc, doc, getDoc, deleteDoc, FieldValue, writeBatch, deleteField } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 const firebaseConfig = {
@@ -14,5 +14,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export { doc, getDoc, setDoc, deleteDoc, FieldValue };
+export { doc, getDoc, setDoc, deleteDoc, FieldValue, writeBatch, deleteField };
 export { onAuthStateChanged, signInWithEmailAndPassword };
