@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc } from './Firebase.js';
+import { db, doc, getDoc, setDoc, updateDoc } from './Firebase.js';
 
 async function checkLogin(event) {
   event.preventDefault();
@@ -33,7 +33,7 @@ async function checkLogin(event) {
       deviceCount = existingDevices.length + 1;
     }
 
-    await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
+    await updateDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
 
     alertElement.textContent = `Hello, ${username}!`;
     localStorage.setItem('username', username);
