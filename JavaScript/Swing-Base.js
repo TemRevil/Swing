@@ -18,7 +18,7 @@ async function checkLoginStatus() {
     } else {
       window.location.href = 'Login.html';
     }
-  }
+}
 // -----------------------------------------
 // Auth Guardian Helper
 document.getElementById('logout-yes').addEventListener('click', logout);
@@ -31,6 +31,7 @@ async function logout() {
 
   try {
     if (deviceName) {
+      // إنشاء Batch لحذف الحقل الخاص بالجهاز
       const batch = writeBatch(db);
       batch.update(loginAuthRef, {
         [deviceName]: deleteField()
