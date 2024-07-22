@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, updateDoc } from './Firebase.js';
+import { db, doc, getDoc, setDoc } from './Firebase.js';
 
 async function checkLogin(event) {
   event.preventDefault();
@@ -28,12 +28,27 @@ async function checkLogin(event) {
     const loginAuthSnap = await getDoc(loginAuthRef);
 
     let deviceCount = 1;
+    let isNewDevice = true;
+
     if (loginAuthSnap.exists()) {
       const existingDevices = Object.keys(loginAuthSnap.data()).filter(key => key.startsWith('device'));
-      deviceCount = existingDevices.length + 1;
+
+      for (const device of existingDevices) {
+        const deviceData = loginAuthSnap.data()[device];
+        if (deviceData.ipAddress === ipAddress && deviceData.domain === domain) {
+          isNewDevice = false;
+          break;
+        }
+      }
+
+      if (isNewDevice) {
+        deviceCount = existingDevices.length + 1;
+      }
     }
 
-    await updateDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
+    if (isNewDevice) {
+      await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
+    }
 
     alertElement.textContent = `Hello, ${username}!`;
     localStorage.setItem('username', username);

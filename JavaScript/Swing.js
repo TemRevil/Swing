@@ -1,5 +1,4 @@
-import { db, doc, getDoc, deleteDoc, setDoc, updateDoc } from './Firebase.js';
-
+import { db, doc, getDoc, deleteDoc, setDoc } from './Firebase.js';
 // -----------------------------------------
 // Auth Guardian Helper
 document.getElementById('logout-yes').addEventListener('click', logout);
@@ -16,7 +15,7 @@ async function logout() {
     // Add logout time and count to the daily login document
     const dailyLoginSnap = await getDoc(dailyLoginRef);
     if (dailyLoginSnap.exists()) {
-      await updateDoc(dailyLoginRef, {
+      await setDoc(dailyLoginRef, {
         loginCount: dailyLoginSnap.data().loginCount,
         loginTimes: dailyLoginSnap.data().loginTimes,
         logoutCount: (dailyLoginSnap.data().logoutCount || 0) + 1,
