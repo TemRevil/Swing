@@ -22,6 +22,7 @@ async function checkLogin(event) {
     const loginCode = `${username}-${currentTime.getDate()}/${currentTime.getMonth() + 1}/${currentTime.getFullYear()}-${currentTime.toLocaleTimeString().split(' ')[0].slice(0, 5)}-${(await getDoc(dailyLoginRef)).data().loginCount}-${Array(3).fill(0).map(() => String.fromCharCode(Math.floor(Math.random() * 26) + 65)).join('')}`;
 
     const ipAddress = await fetch('https://api.ipify.org?format=json').then(response => response.json()).then(data => data.ip);
+    const domain = window.location.hostname;
 
     const loginAuthRef = doc(db, 'LoginAuth', `Login-Code-${username}`);
     const loginAuthSnap = await getDoc(loginAuthRef);
@@ -30,12 +31,9 @@ async function checkLogin(event) {
     if (loginAuthSnap.exists()) {
       const existingDevices = Object.keys(loginAuthSnap.data()).filter(key => key.startsWith('device'));
       deviceCount = existingDevices.length + 1;
-      if (!existingDevices.some(device => loginAuthSnap.data()[device].ipAddress === ipAddress)) {
-        await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress } }, { merge: true });
-      }
-    } else {
-      await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress } });
     }
+
+    await setDoc(loginAuthRef, { [`device${deviceCount}`]: { code: loginCode, ipAddress, domain } }, { merge: true });
 
     alertElement.textContent = `Hello, ${username}!`;
     localStorage.setItem('username', username);
