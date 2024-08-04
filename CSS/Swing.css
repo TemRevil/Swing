@@ -117,10 +117,6 @@ nav {
 .receipt .align {
     text-align: center;
 }
-#order-quantity, #order-addon-quantity {
-    margin-right: 5px;
-    font-size: 16px;
-}
 #order-addon {
     margin-left: 20px;
     font-size: 16px;
@@ -203,7 +199,6 @@ nav {
     padding: 20px;
     overflow: auto;
 }
-
 #order-quantity {
     max-width: 60px;
     background-color: white;
@@ -214,6 +209,7 @@ nav {
 }
 .choice-btn {
     min-width: 90px;
+    position: relative;
     padding: 3px 20px;
     background-color: transparent;
     border: 3px var(--our-blue) solid;
@@ -227,6 +223,21 @@ nav {
 .choice-btn.active {
     background-color: var(--our-blue);
     color: white;
+}
+.choice-btn.active::after {
+    content: attr(data-click-count) ' ';
+    width: 27px;
+    height: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: white;
+    color: #3395ff;
+    border-radius: 999px;
+    display: block;
 }
 .add-order {
     width: 100%;

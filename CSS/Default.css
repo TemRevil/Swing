@@ -165,9 +165,10 @@ hr {
     background-color: var(--alice-blue);
     background-image: linear-gradient(160deg, var(--alice-blue) 50%, #f3e8ee 100%);
     border-radius: 25px;
+    transition: 0.2s 0s ease-in-out;
 }
 #alert {
-    height: 25px;
+    min-height: 25px;
 }
 /* ------------------------------------------ */
 .red-btn {

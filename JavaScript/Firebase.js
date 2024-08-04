@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, setDoc, doc, getDoc, deleteDoc, FieldValue, writeBatch, deleteField } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getFirestore, setDoc, doc, getDoc, deleteDoc, FieldValue, writeBatch, deleteField, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA7sHg7jdPnE2pPcL3EO_-7tPsD9FtD6l8",
@@ -14,5 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export { doc, getDoc, setDoc, deleteDoc, FieldValue, writeBatch, deleteField };
+export const storage = getStorage(app);  // إضافة Firebase Storage هنا
+export { doc, getDoc, setDoc, deleteDoc, FieldValue, writeBatch, deleteField, collection, getDocs };
 export { onAuthStateChanged, signInWithEmailAndPassword };
+export { ref, getDownloadURL };  // تصدير وظائف التخزين

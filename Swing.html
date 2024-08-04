@@ -35,37 +35,11 @@
         <div class="main-view">
             <section class="menu w flex row between">
                 <div class="flex col">
-                    <div class="menu-kinds w flex row gap">
-                        <button class="kind-box flex center text" id="offers">Offers</button>
-                        <button class="kind-box flex center text" id="beef">Beef</button>
-                        <button class="kind-box flex center text" id="fried-chicken">Fried Chicken</button>
-                        <button class="kind-box flex center text" id="drinks">Drinks</button>
-                        <button class="kind-box flex center text" id="side-items">Side-Items</button>
+                    <div class="menu-kinds w flex row gap" id="menu-kinds">
+                        <!-- Menu Kind will be generated dynamically -->
                     </div>
-                    <div class="main-menu flex col gap">
-                        <div class="offers flex row gap off">
-                            <!-- offers content -->
-                        </div>
-                        <div class="beef flex row gap off">
-                            <div class="item-box flex col between">
-                                <p class="w text" id="item-name">Beef Sandwich</p>
-                                <div class="img"><img src="Backround/Menu/Beef Sandwich.jpeg" alt="#"></div>
-                                <p class="w flex text" id="item-price">120 EPG</p>
-                            </div>
-                        </div>
-                        <div class="fried-chicken flex row gap off">
-                            <!-- fried-chicken content -->
-                        </div>
-                        <div class="drinks flex row gap off">
-                            <div class="item-box flex col between">
-                                <p class="w text" id="item-name">Mojito</p>
-                                <div class="img"><img src="Backround/Menu/Mojito.jpg" alt="#"></div>
-                                <p class="w flex text" id="item-price">25 EPG</p>
-                            </div>
-                        </div>
-                        <div class="side-items flex row gap off">
-                            <!-- side-items content -->
-                        </div>
+                    <div class="main-menu flex col gap" id="main-menu">
+                        <!-- Menu content will be generated dynamically -->
                     </div>
                 </div>
                 <div class="receipt flex col">
@@ -73,19 +47,19 @@
                     <hr>
                     <div class="receipt-info flex col gap">
                         <div>
-                            <p class="text"><span id="order-quantity">x2</span>Mojito</p>
-                            <p id="order-addon" class="text"><span id="order-addon-quantity">x1</span>7UP</p>
-                            <p id="order-addon" class="text"><span id="order-addon-quantity">x1</span>Apple</p>
+                            <p class="text"><span>x2</span>Mojito</p>
+                            <p id="order-addon" class="text"><span>x1</span>7UP</p>
+                            <p id="order-addon" class="text"><span>x1</span>Apple</p>
                         </div>
                         <div>
-                            <p class="text"><span id="order-quantity">x5</span>Sandwich Beef</p>
-                            <p id="order-addon" class="text"><span id="order-addon-quantity">x4</span>Single</p>
-                            <p id="order-addon" class="text"><span id="order-addon-quantity">x1</span>Double</p>
+                            <p class="text"><span>x5</span>Sandwich Beef</p>
+                            <p id="order-addon" class="text"><span>x4</span>Single</p>
+                            <p id="order-addon" class="text"><span>x1</span>Double</p>
                         </div>
                     </div>
                     <div class="receipt-price">
                         <hr>
-                        <button class="pay-btn w text"><span id="price">29 EGP</span>PAY</button>
+                        <button class="pay-btn w text"><span id="price">1290EGP</span>PAY</button>
                     </div>
                 </div>
             </section>
@@ -95,42 +69,42 @@
         <div class="modal">
             <div class="box flex col">
                 <div id="order-div-cover">
-                    <img id="order-cover" src="Backround/Login/Background.jpg" alt="#">
-                    <p id="order-cover-name" class="flex center">Mojito</p>
+                  <img id="order-cover" src="Backround/Login/Background.jpg" alt="#">
+                  <p id="order-cover-name" class="flex center">Fried Chicken</p>
                 </div>
                 <div class="flex row">
-                    <div id="img-order-box" class="img"><img src="Backround/Menu/Mojito.jpg" alt="#"></div>
-                    <div id="order-modal-title" class="flex col">
-                        <p class="title">Mojito</p>
-                        <p class="text">Drinks</p>
-                    </div>
+                  <div id="img-order-box" class="img"><img src="Backround/Login/Background.jpg" alt="#"></div>
+                  <div id="order-modal-title" class="flex col">
+                    <p class="title">Original Chicken</p>
+                    <p class="text">Sandwiches</p>
+                  </div>
                 </div>
                 <div class="flex col gap pad">
-                    <p class="align">Quantitiy</p>
-                    <div class="flex row wrap gap">
-                        <button class="blue-btn text"><i class="fa-solid fa-minus"></i></button>
-                        <input type="text" value="1" id="order-quantity" class="text">
-                        <button class="blue-btn text"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                    <p class="align">Size</p>
-                    <div class="flex row wrap gap">
-                        <button class="choice-btn text">Small</button>
-                        <button class="choice-btn text">Large</button>
-                    </div>
-                    <p class="align">Flavor</p>
-                    <div class="flex row wrap gap">
-                        <button class="choice-btn text">Strawberry</button>
-                        <button class="choice-btn text">Nutella</button>
-                        <button class="choice-btn text">Lotus</button>
-                        <button class="choice-btn text">Caramel</button>
-                    </div>
+                  <p class="align">Quantity</p>
+                  <div class="flex row wrap gap">
+                    <button class="blue-btn text" id="decrease-quantity"><i class="fa-solid fa-minus"></i></button>
+                    <input type="text" value="1" id="order-quantity" class="text">
+                    <button class="blue-btn text" id="increase-quantity"><i class="fa-solid fa-plus"></i></button>
+                  </div>
+                  <p class="align">Size</p>
+                  <div class="flex row wrap gap" id="size-options">
+                    <button class="choice-btn text">Single</button>
+                    <button class="choice-btn text">Double</button>
+                  </div>
+                  <p class="align">Sause</p>
+                  <div class="flex row wrap gap" id="flavor-options">
+                    <button class="choice-btn text">Big-Tastey</button>
+                    <button class="choice-btn text">Fire</button>
+                    <button class="choice-btn text">B.B.Q</button>
+                    <button class="choice-btn text">Kat</button>
+                  </div>
                 </div>
                 <div class="add-order flex row center between">
-                    <p id="order-price" class="align">300 EGP</p>
-                    <div class="flex row gap">
-                        <button id="close-order-modal" class="blue-btn-2 text">Close</button>
-                        <button id="add-order" class="blue-btn-2 text">Add</button>
-                    </div>
+                  <p id="order-price" class="align">300 EGP</p>
+                  <div class="flex row gap">
+                    <button id="close-order-modal" class="blue-btn-2 text">Close</button>
+                    <button id="add-order" class="blue-btn-2 text">Add</button>
+                  </div>
                 </div>
             </div>
         </div>
@@ -154,4 +128,4 @@
     <script type="module" src="JavaScript/Swing-Base.js"></script>
     <script type="module" src="JavaScript/Swing.js"></script>
 </body>
-</html>
+</html> 

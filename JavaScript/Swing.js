@@ -16,6 +16,43 @@ document.addEventListener('click', (e) => {
   }
 });
 // -----------------------------------------
+// Menu Kinds = Menu View in Main Menu
+// Function to handle button click and manage active state
+import { fetchAndDisplayItems } from './Swing-Base.js';
+
+// Function to handle button click and manage active state
+function handleButtonClick() {
+  const buttons = document.querySelectorAll('.kind-box');
+  const mainMenuContainer = document.getElementById('main-menu');
+
+  buttons.forEach(button => {
+    button.addEventListener('click', async () => {
+      // Remove 'active' class from all buttons and add 'off' class to all divs
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+        const div = mainMenuContainer.querySelector(`.${btn.id.toLowerCase().replace(' ', '-')}`);
+        if (div) {
+          div.classList.add('off');
+        }
+      });
+
+      // Add 'active' class to the clicked button and remove 'off' class from corresponding div
+      button.classList.add('active');
+      const activeDiv = mainMenuContainer.querySelector(`.${button.id.toLowerCase().replace(' ', '-')}`);
+      if (activeDiv) {
+        activeDiv.classList.remove('off');
+        // Fetch and display items for the active category
+        await fetchAndDisplayItems(button.id);
+      }
+    });
+  });
+}
+
+// Initialize functions after menu data is loaded
+window.addEventListener('menuDataLoaded', () => {
+  handleButtonClick();
+});
+// -----------------------------------------
 // Menu Kinds Slider
 const menuKinds = document.querySelector('.menu-kinds');
 let isDown = false;
@@ -97,3 +134,51 @@ buttons.forEach(button => {
   });
 });
 // -----------------------------------------
+// Order Modal Main Event
+
+// Select modal elements
+const orderModal = document.querySelector('.order-modal');
+const orderCoverImg = document.getElementById('order-cover');
+const orderCoverName = document.getElementById('order-cover-name');
+const orderModalTitle = document.querySelector('#order-modal-title .title');
+const imgOrderBox = document.querySelector('#img-order-box img');
+const orderPrice = document.getElementById('order-price');
+
+// Function to handle opening the modal with item data
+function openModal(itemBox) {
+  // Get data from the clicked item
+  const itemName = itemBox.querySelector('#item-name').textContent;
+  const itemImgSrc = itemBox.querySelector('img').src;
+  const itemPrice = itemBox.querySelector('#item-price').textContent;
+
+  // Transfer data to the modal
+  orderCoverImg.src = itemImgSrc;
+  orderCoverName.textContent = itemName;
+  orderModalTitle.textContent = itemName; // Set the product title in the modal
+  imgOrderBox.src = itemImgSrc; // Set the product image in the modal
+  orderPrice.textContent = itemPrice; // Set the price in the modal
+
+  // Show the modal by removing the "off" class
+  orderModal.classList.remove('off');
+}
+
+// Function to add click event to all item boxes
+function addClickEventToItemBoxes() {
+  // Select all item boxes
+  const itemBoxes = document.querySelectorAll('.item-box');
+
+  // Add click event to each item box
+  itemBoxes.forEach(itemBox => {
+    itemBox.addEventListener('click', () => openModal(itemBox));
+  });
+}
+
+// Add click event to item boxes after data is loaded
+window.addEventListener('menuDataLoaded', () => {
+  addClickEventToItemBoxes();
+});
+
+// Close the modal
+document.getElementById('close-order-modal').addEventListener('click', () => {
+  orderModal.classList.add('off');
+});

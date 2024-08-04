@@ -1,4 +1,5 @@
-import { db, doc, getDoc, setDoc, deleteDoc, deleteField, writeBatch } from './Firebase.js';
+import { db, doc, getDoc, collection, getDocs, storage, ref, getDownloadURL } from './Firebase.js';
+
 // -----------------------------------------
 // Check Login Status
 async function checkLoginStatus() {
@@ -31,7 +32,6 @@ async function logout() {
 
   try {
     if (deviceName) {
-      // إنشاء Batch لحذف الحقل الخاص بالجهاز
       const batch = writeBatch(db);
       batch.update(loginAuthRef, {
         [deviceName]: deleteField()
@@ -66,7 +66,6 @@ async function logout() {
     console.error('Error deleting device field:', error);
   }
 }
-
 // -----------------------------------------
 // Nav Greeting Message
 window.addEventListener('load', async () => {
@@ -78,7 +77,6 @@ window.addEventListener('load', async () => {
     greetingElement.textContent = `Hello, ${username}!`;
   }
 });
-
 // -----------------------------------------
 // Logout Event
 const logoutModal = document.querySelector('.logout-modal');
@@ -97,3 +95,62 @@ document.addEventListener('click', (e) => {
     logoutModal.classList.add('off');
   }
 });
+// -----------------------------------------
+// Restaurant Database Collecting
+// Function to create divs based on button IDs
+function createDivsBasedOnButtons() {
+  const menuKindsContainer = document.getElementById('menu-kinds');
+  const mainMenuContainer = document.getElementById('main-menu');
+  
+  // Iterate over each button in the menu kinds container and create a corresponding div in the main menu container
+  Array.from(menuKindsContainer.getElementsByClassName('kind-box')).forEach(button => {
+    mainMenuContainer.appendChild(document.createElement('div')).className = `${button.id.toLowerCase().replace(' ', '-')} flex row gap off`;
+  });
+}
+
+// Function to fetch and display items for a given category
+async function fetchAndDisplayItems(categoryId) {
+  const username = localStorage.getItem('username');
+  const categoryDocSnapshot = await getDoc(doc(db, `re-data/${username}/Menu/${categoryId}`));
+
+  if (categoryDocSnapshot.exists()) {
+    const categoryData = categoryDocSnapshot.data();
+    const itemsHTML = await Promise.all(Object.keys(categoryData).map(async itemName => {
+      const itemData = categoryData[itemName];
+
+      // Get image URL from Firebase Storage, fallback to local image if not found
+      const itemImg = await getDownloadURL(ref(storage, `${username}/${itemName}.png`)).catch(() => `/Backround/Menu/${itemName}.png`);
+
+      return `
+        <div class="item-box flex col between">
+          <p class="text" id="item-name">${itemName}</p>
+          <div class="img"><img src="${itemImg}" alt="#"></div>
+          <p class="flex text" id="item-price">${itemData.Price || 0} EPG</p>
+        </div>
+      `;
+    }));
+
+    // Find the corresponding div in the main menu container and set its innerHTML
+    document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`).innerHTML = itemsHTML.join('');
+  }
+}
+
+// Initialize data and create divs for menu items
+const username = localStorage.getItem('username');
+const menuRef = collection(db, `re-data/${username}/Menu`);
+
+getDocs(menuRef).then(querySnapshot => {
+  // Generate HTML for menu kinds buttons
+  document.getElementById('menu-kinds').innerHTML = querySnapshot.docs.map(doc => `
+    <button class="kind-box flex center text" id="${doc.id}">
+      ${doc.id.replace('-', ' ')}
+    </button>
+  `).join('');
+  
+  createDivsBasedOnButtons();
+  
+  // Dispatch custom event to indicate menu data has been loaded
+  window.dispatchEvent(new Event('menuDataLoaded'));
+}).catch(error => console.error('Error collecting menu data:', error));
+
+export { fetchAndDisplayItems };
