@@ -134,9 +134,18 @@ buttons.forEach(button => {
   });
 });
 // -----------------------------------------
-// Order Modal Main Event
-
-// Select modal elements
+// Modal Close Event
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    const wh = document.querySelector('.wh');
+    if (wh) {
+      wh.classList.add('off');
+    }
+  }
+});
+// -----------------------------------------
+// Order Modal Main Events
+const unsplashAccessKey = 'q0PmfRd9boo7_U1FJP7y1iRVbP1AiHUcPckKcsgb_ac';
 const orderModal = document.querySelector('.order-modal');
 const orderCoverImg = document.getElementById('order-cover');
 const orderCoverName = document.getElementById('order-cover-name');
@@ -144,41 +153,58 @@ const orderModalTitle = document.querySelector('#order-modal-title .title');
 const imgOrderBox = document.querySelector('#img-order-box img');
 const orderPrice = document.getElementById('order-price');
 
-// Function to handle opening the modal with item data
-function openModal(itemBox) {
-  // Get data from the clicked item
+async function openModal(itemBox) {
   const itemName = itemBox.querySelector('#item-name').textContent;
   const itemImgSrc = itemBox.querySelector('img').src;
   const itemPrice = itemBox.querySelector('#item-price').textContent;
+  const activeKindName = [...document.querySelectorAll('.kind-box')].find(kindBox => kindBox.classList.contains('active')).textContent.trim();
 
-  // Transfer data to the modal
-  orderCoverImg.src = itemImgSrc;
+  orderModalTitle.textContent = itemName;
+  imgOrderBox.src = itemImgSrc;
+  orderPrice.textContent = itemPrice;
   orderCoverName.textContent = itemName;
-  orderModalTitle.textContent = itemName; // Set the product title in the modal
-  imgOrderBox.src = itemImgSrc; // Set the product image in the modal
-  orderPrice.textContent = itemPrice; // Set the price in the modal
+  document.getElementById('order-kind-name').textContent = activeKindName;
 
-  // Show the modal by removing the "off" class
+  try {
+    const response = await fetch(`https://api.unsplash.com/search/photos?query=${activeKindName}+${itemName}+food&orientation=squarish&content_filter=low&client_id=${unsplashAccessKey}`);
+    const data = await response.json();
+    orderCoverImg.src = data.results.length > 0 ? data.results[Math.floor(Math.random() * data.results.length)].urls.regular : itemImgSrc;
+  } catch (error) {
+    console.error('Error fetching image from Unsplash:', error);
+    orderCoverImg.src = itemImgSrc;
+  }
+
   orderModal.classList.remove('off');
 }
 
-// Function to add click event to all item boxes
-function addClickEventToItemBoxes() {
-  // Select all item boxes
-  const itemBoxes = document.querySelectorAll('.item-box');
+document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox)));
+document.getElementById('close-order-modal').addEventListener('click', () => orderModal.classList.add('off'));
+window.addEventListener('menuDataLoaded', () => document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox))));
 
-  // Add click event to each item box
-  itemBoxes.forEach(itemBox => {
-    itemBox.addEventListener('click', () => openModal(itemBox));
-  });
+export function attachModalEventListeners() {
+  document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox)));
 }
 
-// Add click event to item boxes after data is loaded
-window.addEventListener('menuDataLoaded', () => {
-  addClickEventToItemBoxes();
-});
+// Modal Options Contorl
+// Get the quantity input and buttons
+const quantityInput = document.getElementById('order-quantity');
+const decreaseButton = document.getElementById('decrease-quantity');
+const increaseButton = document.getElementById('increase-quantity');
 
-// Close the modal
-document.getElementById('close-order-modal').addEventListener('click', () => {
-  orderModal.classList.add('off');
-});
+// Add event listeners to the buttons
+decreaseButton.addEventListener('click', decreaseQuantity);
+increaseButton.addEventListener('click', increaseQuantity);
+
+// Function to decrease the quantity
+function decreaseQuantity() {
+  const currentValue = parseInt(quantityInput.value);
+  if (currentValue > 1) {
+    quantityInput.value = currentValue - 1;
+  }
+}
+
+// Function to increase the quantity
+function increaseQuantity() {
+  const currentValue = parseInt(quantityInput.value);
+  quantityInput.value = currentValue + 1;
+}

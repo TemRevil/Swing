@@ -1,4 +1,4 @@
-import { db, doc, getDoc, collection, getDocs, storage, ref, getDownloadURL } from './Firebase.js';
+import { db, doc, getDoc, collection, getDocs, storage, ref, getDownloadURL, writeBatch, deleteField, setDoc } from './Firebase.js';
 
 // -----------------------------------------
 // Check Login Status
@@ -98,6 +98,8 @@ document.addEventListener('click', (e) => {
 // -----------------------------------------
 // Restaurant Database Collecting
 // Function to create divs based on button IDs
+import { attachModalEventListeners } from './Swing.js';
+
 function createDivsBasedOnButtons() {
   const menuKindsContainer = document.getElementById('menu-kinds');
   const mainMenuContainer = document.getElementById('main-menu');
@@ -132,6 +134,9 @@ async function fetchAndDisplayItems(categoryId) {
 
     // Find the corresponding div in the main menu container and set its innerHTML
     document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`).innerHTML = itemsHTML.join('');
+
+    // Attach event listeners to new item-box elements after they are added to the DOM
+    attachModalEventListeners();
   }
 }
 
