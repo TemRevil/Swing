@@ -121,22 +121,33 @@ async function fetchAndDisplayItems(categoryId) {
       const itemData = categoryData[itemName];
 
       // Get image URL from Firebase Storage, fallback to local image if not found
-      const itemImg = await getDownloadURL(ref(storage, `${username}/${itemName}.png`)).catch(() => `/Backround/Menu/${itemName}.png`);
+      const itemImg = await getDownloadURL(ref(storage, `${username}/Menu/${categoryId}/${itemName}.png`)).catch(() => `/Backround/Menu/${itemName}.png`);
 
-      return `
-        <div class="item-box flex col between">
-          <p class="text" id="item-name">${itemName}</p>
-          <div class="img"><img src="${itemImg}" alt="#"></div>
-          <p class="flex text" id="item-price">${itemData.Price || 0} EPG</p>
-        </div>
-      `;
+      // Store options in item data (if available)
+      let options = {};
+      if (itemData.Options) {
+        options = itemData.Options;
+      }
+
+      return {
+        html: `
+          <div class="item-box flex col between" data-item-data='${JSON.stringify({ ...itemData, options })}'>
+            <p class="text" id="item-name">${itemName}</p>
+            <div class="img"><img src="${itemImg}" alt="#"></div>
+            <p class="flex text" id="item-price">${itemData.Price || 0} EPG</p>
+          </div>
+        `,
+        options: options,
+        name: itemName,
+        price: itemData.Price || 0
+      };
     }));
 
     // Find the corresponding div in the main menu container and set its innerHTML
-    document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`).innerHTML = itemsHTML.join('');
+    document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`).innerHTML = itemsHTML.map(item => item.html).join('');
 
     // Attach event listeners to new item-box elements after they are added to the DOM
-    attachModalEventListeners();
+    attachModalEventListeners(itemsHTML);
   }
 }
 
@@ -153,6 +164,13 @@ getDocs(menuRef).then(querySnapshot => {
   `).join('');
   
   createDivsBasedOnButtons();
+  
+  // Add event listeners to kind buttons
+  Array.from(document.getElementById('menu-kinds').getElementsByClassName('kind-box')).forEach(button => {
+    button.addEventListener('click', () => {
+      fetchAndDisplayItems(button.id);
+    });
+  });
   
   // Dispatch custom event to indicate menu data has been loaded
   window.dispatchEvent(new Event('menuDataLoaded'));

@@ -152,21 +152,22 @@ const orderCoverName = document.getElementById('order-cover-name');
 const orderModalTitle = document.querySelector('#order-modal-title .title');
 const imgOrderBox = document.querySelector('#img-order-box img');
 const orderPrice = document.getElementById('order-price');
+const quantityInput = document.getElementById('order-quantity');
+const decreaseButton = document.getElementById('decrease-quantity');
+const increaseButton = document.getElementById('increase-quantity');
 
-async function openModal(itemBox) {
-  const itemName = itemBox.querySelector('#item-name').textContent;
-  const itemImgSrc = itemBox.querySelector('img').src;
-  const itemPrice = itemBox.querySelector('#item-price').textContent;
-  const activeKindName = [...document.querySelectorAll('.kind-box')].find(kindBox => kindBox.classList.contains('active')).textContent.trim();
+let previousQuantity = parseInt(quantityInput.value); // Store previous quantity
 
-  orderModalTitle.textContent = itemName;
-  imgOrderBox.src = itemImgSrc;
-  orderPrice.textContent = itemPrice;
-  orderCoverName.textContent = itemName;
-  document.getElementById('order-kind-name').textContent = activeKindName;
+// Open modal function
+async function openModal(itemBox, itemData) {
+  if (!itemData) return console.error('itemData is undefined');
+
+  const { itemName, itemImgSrc, itemPrice, activeKindName } = getItemDetails(itemBox);
+
+  updateModalContent(itemName, itemImgSrc, itemPrice, activeKindName);
 
   try {
-    const response = await fetch(`https://api.unsplash.com/search/photos?query=${activeKindName}+${itemName}+food&orientation=squarish&content_filter=low&client_id=${unsplashAccessKey}`);
+    const response = await fetchUnsplashImage(activeKindName, itemName);
     const data = await response.json();
     orderCoverImg.src = data.results.length > 0 ? data.results[Math.floor(Math.random() * data.results.length)].urls.regular : itemImgSrc;
   } catch (error) {
@@ -174,37 +175,234 @@ async function openModal(itemBox) {
     orderCoverImg.src = itemImgSrc;
   }
 
-  orderModal.classList.remove('off');
+  renderOptions(itemData.options);
+
+  orderModal.classList.remove('off'); // Add this line to show the modal
 }
 
-document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox)));
-document.getElementById('close-order-modal').addEventListener('click', () => orderModal.classList.add('off'));
-window.addEventListener('menuDataLoaded', () => document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox))));
-
-export function attachModalEventListeners() {
-  document.querySelectorAll('.item-box').forEach(itemBox => itemBox.addEventListener('click', () => openModal(itemBox)));
+// Get item details function
+function getItemDetails(itemBox) {
+  return {
+    itemName: itemBox.querySelector('#item-name').textContent,
+    itemImgSrc: itemBox.querySelector('img').src,
+    itemPrice: itemBox.querySelector('#item-price').textContent,
+    activeKindName: [...document.querySelectorAll('.kind-box')].find(kindBox => kindBox.classList.contains('active')).textContent.trim(),
+  };
 }
 
-// Modal Options Contorl
-// Get the quantity input and buttons
-const quantityInput = document.getElementById('order-quantity');
-const decreaseButton = document.getElementById('decrease-quantity');
-const increaseButton = document.getElementById('increase-quantity');
+// Update modal content function
+function updateModalContent(itemName, itemImgSrc, itemPrice, activeKindName) {
+  orderModalTitle.textContent = itemName;
+  imgOrderBox.src = itemImgSrc;
+  orderPrice.textContent = itemPrice;
+  orderCoverName.textContent = itemName;
+  document.getElementById('order-kind-name').textContent = activeKindName;
+}
 
-// Add event listeners to the buttons
-decreaseButton.addEventListener('click', decreaseQuantity);
-increaseButton.addEventListener('click', increaseQuantity);
+// Render options function
+function renderOptions(options) {
+  const optionsContainer = document.getElementById('options-container');
+  optionsContainer.className = 'flex col gap';
+  optionsContainer.innerHTML = '';
 
-// Function to decrease the quantity
-function decreaseQuantity() {
-  const currentValue = parseInt(quantityInput.value);
-  if (currentValue > 1) {
-    quantityInput.value = currentValue - 1;
+  if (options) {
+    const optionKeys = Object.keys(options);
+    let sizeOptions;
+
+    // Check if Size option is present
+    if (optionKeys.includes('Size')) {
+      sizeOptions = options['Size'];
+      renderOption('Size', sizeOptions, optionsContainer);
+    }
+
+    // Render other options
+    optionKeys.forEach((optionKey) => {
+      if (optionKey !== 'Size') {
+        const option = options[optionKey];
+        renderOption(optionKey, option, optionsContainer);
+      }
+    });
+  } else {
+    console.error('itemData.options is undefined');
+  }
+
+  attachEventListenersToButtons(optionsContainer);
+}
+
+function renderOption(optionName, option, optionsContainer) {
+  const optionLabel = document.createElement('p');
+  optionLabel.className = 'align';
+  optionLabel.textContent = optionName;
+  optionsContainer.appendChild(optionLabel);
+
+  const optionButtonsContainer = document.createElement('div');
+  optionButtonsContainer.className = 'flex row wrap gap';
+
+  const isActiveReq = option['Active-Req'] === 'Yes';
+  const activeAllowed = option['Active-Allowed'];
+  const activeMax = option['Active-Max'];
+  const activeMin = option['Active-Min'];
+
+  console.log(`Rendering option ${optionName} with Active-Req: ${isActiveReq}, Active-Allowed: ${activeAllowed}, Active-Max: ${activeMax}, Active-Min: ${activeMin}`);
+
+  Object.keys(option).forEach((optionValue) => {
+    if (!['Active-Req', 'Active-Allowed', 'Active-Max', 'Active-Min'].includes(optionValue)) {
+      const optionButton = document.createElement('button');
+      optionButton.className = 'choice-btn text';
+      optionButton.textContent = optionValue;
+      if (isActiveReq) {
+        optionButton.required = true;
+        optionButton.dataset.activeAllowed = activeAllowed;
+        optionButton.dataset.activeMax = activeMax;
+        optionButton.dataset.activeMin = activeMin;
+      }
+      optionButtonsContainer.appendChild(optionButton);
+    }
+  });
+
+  optionsContainer.appendChild(optionButtonsContainer);
+}
+
+// Attach event listeners to buttons function
+function attachEventListenersToButtons(optionsContainer) {
+  document.querySelectorAll('.choice-btn').forEach((button) => {
+    let longPressTimeout;
+
+    button.addEventListener('mousedown', () => {
+      longPressTimeout = setTimeout(() => {
+        longPressTimeout = null;
+        const longPressEvent = new CustomEvent('longPress');
+        button.dispatchEvent(longPressEvent);
+      }, 1000);
+    });
+
+    button.addEventListener('mouseup', () => {
+      if (longPressTimeout) {
+        clearTimeout(longPressTimeout);
+        longPressTimeout = null;
+      }
+    });
+
+    button.addEventListener('click', (event) => {
+      if (longPressTimeout) {
+        event.detail = { longPress: true };
+      }
+      toggleActiveClass(event, optionsContainer);
+    });
+
+    button.addEventListener('longPress', (event) => {
+      toggleActiveClass({ target: button, detail: { longPress: true } }, optionsContainer);
+    });
+  });
+}
+
+// Toggle active class function
+function toggleActiveClass(event, optionsContainer) {
+  const button = event.target;
+  const optionName = button.parentNode.parentNode.querySelector('p.align').textContent;
+  const optionButtons = button.parentNode.querySelectorAll('button.choice-btn');
+  const maxQuantity = parseInt(quantityInput.value);
+  const currentActiveButtons = Array.from(optionButtons).filter((btn) => btn.classList.contains('active'));
+  const totalSelections = Array.from(currentActiveButtons).reduce((total, btn) => total + parseInt(btn.dataset.clickCount), 0);
+
+  if (event.detail && event.detail.longPress) {
+    button.classList.remove('active');
+    button.dataset.clickCount = 0;
+  } else {
+    if (!button.classList.contains('active')) {
+      if (totalSelections < maxQuantity) {
+        button.classList.add('active');
+        button.dataset.clickCount = 1;
+      }
+    } else {
+      const newCount = parseInt(button.dataset.clickCount) + 1;
+      if (totalSelections + 1 <= maxQuantity) {
+        button.dataset.clickCount = newCount;
+      }
+    }
+  }
+
+  // Check if option is Active-Req and validate selection
+  if (button.required) {
+    const activeAllowed = parseInt(button.dataset.activeAllowed);
+    const activeMax = parseInt(button.dataset.activeMax);
+    const activeMin = parseInt(button.dataset.activeMin);
+    const currentSelections = Array.from(optionButtons).filter((btn) => btn.classList.contains('active')).length;
+
+    console.log(`Validating selection for ${optionName} with Active-Allowed: ${activeAllowed}, Active-Max: ${activeMax}, Active-Min: ${activeMin}, Current Selections: ${currentSelections}`);
+
+    if (currentSelections < activeMin || currentSelections > activeMax) {
+      console.error(`Invalid selection for ${optionName}. Must select between ${activeMin} and ${activeMax} options.`);
+      button.classList.remove('active');
+      button.dataset.clickCount = 0;
+    }
   }
 }
 
-// Function to increase the quantity
-function increaseQuantity() {
-  const currentValue = parseInt(quantityInput.value);
-  quantityInput.value = currentValue + 1;
+// Fetch Unsplash image function
+function fetchUnsplashImage(activeKindName, itemName) {
+  return fetch(`https://api.unsplash.com/search/photos?query=${activeKindName}+${itemName}+food&orientation=squarish&content_filter=low&client_id=${unsplashAccessKey}`);
+}
+
+// Decrease quantity button event listener
+decreaseButton.addEventListener('click', () => {
+  const currentQuantity = parseInt(quantityInput.value);
+
+  if (currentQuantity > 1) {
+    quantityInput.value = currentQuantity - 1;
+  }
+
+  if (currentQuantity - 1 < previousQuantity) {
+    document.querySelectorAll('.choice-btn.active').forEach((button) => {
+      button.classList.remove('active');
+      button.dataset.clickCount = 0; // Reset click count
+    });
+  }
+
+  previousQuantity = parseInt(quantityInput.value); // Update previous quantity
+});
+
+// Increase quantity button event listener
+increaseButton.addEventListener('click', () => {
+  const currentQuantity = parseInt(quantityInput.value);
+  quantityInput.value = currentQuantity + 1;
+  previousQuantity = currentQuantity + 1; // Update previous quantity
+});
+
+// Reset modal function
+function resetModal() {
+  orderModalTitle.textContent = '';
+  imgOrderBox.src = '';
+  orderPrice.textContent = '';
+  orderCoverName.textContent = '';
+  document.getElementById('order-kind-name').textContent = '';
+  document.getElementById('options-container').innerHTML = '';
+  quantityInput.value = '1';
+
+  document.querySelectorAll('.choice-btn.active').forEach((button) => {
+    button.classList.remove('active');
+    button.dataset.clickCount = 0;
+  });
+}
+
+// Attach modal event listeners function
+export function attachModalEventListeners(itemsHTML) {
+  document.querySelectorAll('.item-box').forEach(itemBox => {
+    itemBox.addEventListener('click', () => {
+      const itemData = JSON.parse(itemBox.dataset.itemData);
+      openModal(itemBox, itemData);
+    });
+  });
+
+  document.getElementById('close-order-modal').addEventListener('click', () => {
+    orderModal.classList.add('off');
+    resetModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      orderModal.classList.add('off');
+      resetModal();
+    }
+  });
 }

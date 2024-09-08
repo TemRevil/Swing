@@ -69,14 +69,14 @@
         <div class="modal">
             <div class="box flex col">
                 <div id="order-div-cover">
-                  <img id="order-cover" src="Backround/Login/Background.jpg" alt="#">
-                  <p id="order-cover-name" class="flex center">Fried Chicken</p>
+                  <img id="order-cover" src="..." alt="#"> <!-- Unsplash Background Images -->
+                  <p id="order-cover-name" class="flex center"><!-- Item Name --></p>
                 </div>
                 <div class="flex row">
-                  <div id="img-order-box" class="img"><img src="Backround/Login/Background.jpg" alt="#"></div>
+                  <div id="img-order-box" class="img"><img src="..." alt="#"></div>
                   <div id="order-modal-title" class="flex col">
-                    <p class="title">Original Chicken</p>
-                    <p id="order-kind-name" class="text">Sandwiches</p>
+                    <p class="title"><!-- Item Name --></p>
+                    <p id="order-kind-name" class="text"><!-- Item Kind --></p>
                   </div>
                 </div>
                 <div class="flex col gap pad">
@@ -86,21 +86,10 @@
                     <input type="text" value="1" id="order-quantity" class="text">
                     <button class="blue-btn text" id="increase-quantity"><i class="fa-solid fa-plus"></i></button>
                   </div>
-                  <p class="align">Size</p>
-                  <div class="flex row wrap gap" id="size-options">
-                    <button class="choice-btn text">Single</button>
-                    <button class="choice-btn text">Double</button>
-                  </div>
-                  <p class="align">Sause</p>
-                  <div class="flex row wrap gap" id="flavor-options">
-                    <button class="choice-btn text">Big-Tastey</button>
-                    <button class="choice-btn text">Fire</button>
-                    <button class="choice-btn text">B.B.Q</button>
-                    <button class="choice-btn text">Kat</button>
-                  </div>
+                  <div id="options-container"><!-- Item Options Comes From Firebase --></div>
                 </div>
                 <div class="add-order flex row center between">
-                  <p id="order-price" class="align">300 EGP</p>
+                  <p id="order-price" class="align"><!-- Item Price --></p>
                   <div class="flex row gap">
                     <button id="close-order-modal" class="blue-btn-2 text">Close</button>
                     <button id="add-order" class="blue-btn-2 text">Add</button>
