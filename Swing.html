@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Swing POS System For Restaurant Management">
     <meta name="keywords" content="TemRevil, Tem Revil, Revil, Tem, Mohammed Ahmed, POS, System, Food System, Food Point, Foodpoint, Restaurant, Restaurant System, Takeaway, Delivery, Talabat, Food, Lyve Pos, Orders, Order">
-    <meta name="author" content="Tem Revil, Karma, Boshra Tamer">
+    <meta name="author" content="Tem Revil">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#3395ff">
     <meta name="referrer" content="no-referrer">
@@ -21,17 +21,12 @@
     <nav class="w flex row gap between">
         <p class="align">SWING</p>
         <p id="greeting" class="align"></p>
-        <button class="red-btn text" id="logout-modal">LOGOUT</button>
+        <div class="flex row center gap">
+            <div id="connection-status"></div>
+            <button class="red-btn text" id="logout-modal">Logout</button>
+        </div>
     </nav>
     <section class="w flex row">
-        <div class="aside flex col">
-            <div class="flex col center gap">
-              <button class="aside-button" id="menu"><img src="Backround/Icons/Menu.png" alt="Menu"></button>
-              <button class="aside-button" id="orders"><img src="Backround/Icons/Orders.png" alt="Orders"></button>
-              <button class="aside-button" id="stocks"><img src="Backround/Icons/Stocks.png" alt="Stocks"></button>
-            </div>
-            <button class="aside-button" id="settings"><img src="Backround/Icons/Settings.png" alt="Settings"></button>
-        </div>
         <div class="main-view">
             <section class="menu w flex row between">
                 <div class="flex col">
@@ -43,19 +38,27 @@
                     </div>
                 </div>
                 <div class="receipt flex col">
-                    <p class="align">Receipt</p>
+                    <p class="title">Receipt</p>
                     <hr>
-                    <div class="receipt-info flex col gap">
-                        <div>
-                            <p class="text"><span>x2</span>Mojito</p>
-                            <p id="order-addon" class="text"><span>x1</span>7UP</p>
-                            <p id="order-addon" class="text"><span>x1</span>Apple</p>
-                        </div>
-                        <div>
-                            <p class="text"><span>x5</span>Sandwich Beef</p>
-                            <p id="order-addon" class="text"><span>x4</span>Single</p>
-                            <p id="order-addon" class="text"><span>x1</span>Double</p>
-                        </div>
+                    <div class="receipt-info flex col gap" id="order-list">
+                        <!-- <div class="item-receipt flex row gap">
+                            <div class="xr-731 flex row gap">
+                                <img src="Backround/Login/Background.jpg" alt="..." id="item-receipt-img">
+                                <div class="w flex col">
+                                    <div class="w flex row center between">
+                                        <p id="item-receipt-name" class="text">Sandwich</p>
+                                        <span id="item-receipt-price" class="text">14.99 <span id="currency">$</span></span>
+                                    </div>
+                                    <div id="item-receipt-options" class="text">
+                                        <span>2x Double</span>
+                                    </div>
+                                    <div id="item-receipt-comment" class="w xs-732 text">
+                                        Spicy hot..
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="delete-order"><img src="Backround/Icons/Trash.png" alt="Delete-Order"></button>
+                        </div> -->
                     </div>
                     <div class="receipt-price">
                         <hr>
@@ -65,6 +68,13 @@
             </section>
         </div>
     </section>
+    <div class="alert flex row gap between off">
+        <div class="alert-icon"><!-- Alert Icon --></div>
+        <div class="w">
+            <span class="text" id="alert"><!-- Alert Here--></span>
+        </div>
+        <button class="close-alert transition"><i class="fa-solid fa-xmark"></i></button>
+    </div>
     <div class="wh flex center order-modal off">
         <div class="modal">
             <div class="box flex col">
@@ -87,9 +97,13 @@
                     <button class="blue-btn text" id="increase-quantity"><i class="fa-solid fa-plus"></i></button>
                   </div>
                   <div id="options-container"><!-- Item Options Comes From Firebase --></div>
+                  <div class="flex col gap xs-732">
+                    <p class="align">Comments</p>
+                    <textarea id="order-comment" class="text transition"></textarea>
+                  </div>
                 </div>
                 <div class="add-order flex row center between">
-                  <p id="order-price" class="align"><!-- Item Price --></p>
+                  <p id="order-price" class="align price"><!-- Item Price --></p>
                   <div class="flex row gap">
                     <button id="close-order-modal" class="blue-btn-2 text">Close</button>
                     <button id="add-order" class="blue-btn-2 text">Add</button>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Swing POS System For Restaurant Management">
+        <meta name="keywords" content="TemRevil, Tem Revil, Revil, Tem, Mohammed Ahmed, POS, System, Food System, Food Point, Foodpoint, Restaurant, Restaurant System, Takeaway, Delivery, Talabat, Food, Lyve Pos, Orders, Order">
+        <meta name="author" content="Tem Revil">
+        <meta name="robots" content="index, follow">
+        <meta name="theme-color" content="#3395ff">
+        <meta name="referrer" content="no-referrer">
+    
+        <link rel="icon" href="Background/icon.png" type="image/gif">
+        <title>Swing - POS</title>
+    
+        <link rel="stylesheet" href="CSS/all.css">
+        <link rel="stylesheet" href="CSS/Default.css">
+        <link rel="stylesheet" href="CSS/Main-Menu.css">
+    </head>
+<body class="flex col">
+    <nav class="flex row center between" id="navbar">
+        <p class="align">Swing</p>
+        <div class="flex row gap">
+            <div id="connection-status"></div>
+            <button id="logout-modal" class="red-btn text">Logout</button>
+        </div>
+    </nav>    
+    <section class="header flex row wrap">
+        <div class="xs-531 flex col">
+            <div class="wrapper">
+                <p class="conic-gradient text">Hello <span id="username"></span></p>
+            </div>
+            <p class="title">Let's See How We Do Start Today?</p>
+        </div>
+        <div class="xs-531 flex img"><img src="Backround/illustrations/Welcoming.svg" alt="Get Your States Today?"></div>
+    </section>
+    <section class="cards-view flex row center">
+        <div class="card" id="Swing">
+            <img src="Backround/Icons/Swing-Card.png" alt="Swing" class="card-icon">
+            <p class="title">Swing</p>
+            <p class="text">let's make some money!</p>
+        </div>
+        <div class="card" id="Dispatcher">
+            <img src="Backround/Icons/Kitchen-Card.png" alt="Kitchen Dispatcher" class="card-icon">
+            <p class="title">Dispatcher</p>
+            <p class="text"><span id="greating-shift">Good Morning</span>, Let's Get Started!</p>
+        </div>
+        <div class="card" id="Stocks">
+            <img src="Backround/Icons/Stocks-Card.png" alt="Stocks" class="card-icon">
+            <p class="title">Stocks</p>
+            <p class="text">Watch Your Next Movement.</p>
+        </div>
+        <div class="card" id="Settings">
+            <img src="Backround/Icons/Settings-Card.png" alt="Settings" class="card-icon">
+            <p class="title">Settings</p>
+            <p class="text">Adjust Your Settings.</p>
+        </div>
+    </section>
+    <div class="wh flex center logout-modal off">
+        <div class="modla">
+            <div class="box flex col between">
+                <div class="flex col gap">
+                    <p class="align">LOGOUT</p>
+                    <p class="text">Are You Sure You Want To?</p>
+                </div>
+                <div class="w flex row flex-end gap">
+                    <button class="red-btn text" id="logout-yes">Yes End Season</button>
+                    <button class="blue-btn text" id="logout-no">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="content" class="off"></section>
+    <script type="module" src="JavaScript/Firebase.js"></script>
+    <script type="module" src="JavaScript/Main-Menu.js"></script>
+</body>
+</html>

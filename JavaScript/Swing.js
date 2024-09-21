@@ -53,87 +53,6 @@ window.addEventListener('menuDataLoaded', () => {
   handleButtonClick();
 });
 // -----------------------------------------
-// Menu Kinds Slider
-const menuKinds = document.querySelector('.menu-kinds');
-let isDown = false;
-let startX;
-let scrollLeft;
-
-const handleMouseDown = (e) => {
-  isDown = true;
-  startX = e.type === 'touchstart'? e.touches[0].pageX : e.pageX;
-  scrollLeft = menuKinds.scrollLeft;
-};
-
-const handleMouseMove = (e) => {
-  if (!isDown) return;
-  const x = e.type === 'touchmove'? e.touches[0].pageX : e.pageX;
-  const walk = x - startX;
-  menuKinds.scrollLeft = scrollLeft - walk;
-};
-
-const handleMouseUp = () => {
-  isDown = false;
-};
-
-menuKinds.addEventListener('mousedown', handleMouseDown);
-menuKinds.addEventListener('touchstart', handleMouseDown);
-menuKinds.addEventListener('mousemove', handleMouseMove);
-menuKinds.addEventListener('touchmove', handleMouseMove);
-menuKinds.addEventListener('mouseup', handleMouseUp);
-menuKinds.addEventListener('touchend', handleMouseUp);
-
-const kindBoxes = menuKinds.querySelectorAll('.kind-box');
-
-kindBoxes.forEach((kindBox) => {
-  kindBox.addEventListener('click', () => {
-    kindBoxes.forEach((kb) => kb.classList.remove('active'));
-    kindBox.classList.add('active');
-  });
-});
-
-const menuItems = document.querySelectorAll('.main-menu > div');
-
-kindBoxes.forEach((kindBox) => {
-  kindBox.addEventListener('click', () => {
-    kindBoxes.forEach((kb) => kb.classList.remove('active'));
-    kindBox.classList.add('active');
-
-    const id = kindBox.id;
-    menuItems.forEach((menuItem) => {
-      if (menuItem.classList.contains(id)) {
-        menuItem.classList.remove('off');
-      } else {
-        menuItem.classList.add('off');
-      }
-    });
-  });
-});
-// -----------------------------------------
-// Aside Buttons Gif Animated
-// Get all buttons with the class "aside-button"
-const buttons = document.querySelectorAll('.aside-button');
-
-// Add an event listener to each button
-buttons.forEach(button => {
-  button.addEventListener('click', event => {
-    // Get the button element (not the img element)
-    const buttonElement = event.currentTarget;
-
-    // Get the img element inside the button
-    const img = buttonElement.querySelector('img');
-
-    // Change the src attribute from .png to .gif
-    const gifSrc = img.src.replace('.png', '.gif');
-    img.src = gifSrc;
-
-    // Change the src attribute back to .png after 0.4 seconds
-    setTimeout(() => {
-      img.src = img.src.replace('.gif', '.png');
-    }, 950);
-  });
-});
-// -----------------------------------------
 // Modal Close Event
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
@@ -191,10 +110,13 @@ function getItemDetails(itemBox) {
 }
 
 // Update modal content function
+let baseItemPrice = 0;
+
 function updateModalContent(itemName, itemImgSrc, itemPrice, activeKindName) {
   orderModalTitle.textContent = itemName;
   imgOrderBox.src = itemImgSrc;
-  orderPrice.textContent = itemPrice;
+  baseItemPrice = parseFloat(itemPrice) || 0; // Ensure baseItemPrice is a number
+  orderPrice.innerHTML = `${baseItemPrice} <span id="currency">EGP</span>`;
   orderCoverName.textContent = itemName;
   document.getElementById('order-kind-name').textContent = activeKindName;
 }
@@ -233,31 +155,47 @@ function renderOption(optionName, option, optionsContainer) {
   const optionLabel = document.createElement('p');
   optionLabel.className = 'align';
   optionLabel.textContent = optionName;
+
+  // Check if Active-Req is "Yes" and add the "REQUIRED" label
+  if (option['Active-Settings'] && option['Active-Settings']['Active-Req'] === 'Yes') {
+    const requiredSpan = document.createElement('span');
+    requiredSpan.className = 'req';
+    requiredSpan.textContent = ' REQUIRED'; // Adding space before text for separation
+    optionLabel.appendChild(requiredSpan);
+  }
+
   optionsContainer.appendChild(optionLabel);
 
   const optionButtonsContainer = document.createElement('div');
   optionButtonsContainer.className = 'flex row wrap gap';
+  optionButtonsContainer.dataset.optionName = optionName;
+  optionButtonsContainer.dataset.attendToQuantity = option['Active-Settings'] && option['Active-Settings']['Attend-to-Quantity'];
 
-  const isActiveReq = option['Active-Req'] === 'Yes';
-  const activeAllowed = option['Active-Allowed'];
-  const activeMax = option['Active-Max'];
-  const activeMin = option['Active-Min'];
+  // Set the data attributes on the optionButtonsContainer
+  optionButtonsContainer.dataset.activeMinCounts = option['Active-Settings'] && option['Active-Settings']['Active-Min-Counts']; // Updated
+  optionButtonsContainer.dataset.activeMax = option['Active-Settings'] && option['Active-Settings']['Active-Max'];
+  optionButtonsContainer.dataset.activeMin = option['Active-Settings'] && option['Active-Settings']['Active-Min'];
+  optionButtonsContainer.dataset.activeReq = option['Active-Settings'] && option['Active-Settings']['Active-Req']; // Get the "Active-Req" value from Firebase
+  optionButtonsContainer.dataset.activeCounts = option['Active-Settings'] && option['Active-Settings']['Active-Counts'];
 
-  console.log(`Rendering option ${optionName} with Active-Req: ${isActiveReq}, Active-Allowed: ${activeAllowed}, Active-Max: ${activeMax}, Active-Min: ${activeMin}`);
-
-  Object.keys(option).forEach((optionValue) => {
-    if (!['Active-Req', 'Active-Allowed', 'Active-Max', 'Active-Min'].includes(optionValue)) {
-      const optionButton = document.createElement('button');
-      optionButton.className = 'choice-btn text';
-      optionButton.textContent = optionValue;
-      if (isActiveReq) {
-        optionButton.required = true;
-        optionButton.dataset.activeAllowed = activeAllowed;
-        optionButton.dataset.activeMax = activeMax;
-        optionButton.dataset.activeMin = activeMin;
-      }
-      optionButtonsContainer.appendChild(optionButton);
+  // Sort the option values before rendering them
+  const sortedOptionValues = Object.keys(option).filter((optionValue) => {
+    return !['Active-Settings'].includes(optionValue);
+  }).sort((a, b) => {
+    if (optionName === 'Size') {
+      const sizeOrder = ['Single', 'Double', 'Triple'];
+      return sizeOrder.indexOf(a) - sizeOrder.indexOf(b);
+    } else {
+      return a.localeCompare(b);
     }
+  });
+
+  sortedOptionValues.forEach((optionValue) => {
+    const optionButton = document.createElement('button');
+    optionButton.className = 'choice-btn text';
+    optionButton.textContent = optionValue;
+    optionButton.dataset.price = parseFloat(option[optionValue].Price) || 0; // Ensure price is a number
+    optionButtonsContainer.appendChild(optionButton);
   });
 
   optionsContainer.appendChild(optionButtonsContainer);
@@ -268,12 +206,13 @@ function attachEventListenersToButtons(optionsContainer) {
   document.querySelectorAll('.choice-btn').forEach((button) => {
     let longPressTimeout;
 
+    // Handle long press event
     button.addEventListener('mousedown', () => {
       longPressTimeout = setTimeout(() => {
         longPressTimeout = null;
         const longPressEvent = new CustomEvent('longPress');
         button.dispatchEvent(longPressEvent);
-      }, 1000);
+      }, 1000); // Long press duration is 1 second
     });
 
     button.addEventListener('mouseup', () => {
@@ -283,60 +222,429 @@ function attachEventListenersToButtons(optionsContainer) {
       }
     });
 
+    // Handle normal click event
     button.addEventListener('click', (event) => {
       if (longPressTimeout) {
         event.detail = { longPress: true };
       }
       toggleActiveClass(event, optionsContainer);
+      updateOrderPrice(); // Update price after each click
     });
 
+    // Handle long press event
     button.addEventListener('longPress', (event) => {
       toggleActiveClass({ target: button, detail: { longPress: true } }, optionsContainer);
+      updateOrderPrice(); // Update price after long press
     });
   });
+
+  // Create a MutationObserver to observe changes in the choice buttons
+  const observer = new MutationObserver(() => {
+    updateOrderPrice(); // Update price whenever there's a change in the class or dataset
+  });
+
+  // Observe changes in all choice buttons
+  document.querySelectorAll('.choice-btn').forEach((button) => {
+    observer.observe(button, {
+      attributes: true, // Watch for attribute changes
+      attributeFilter: ['class', 'data-click-count'], // Specifically watch for class and data-click-count changes
+    });
+  });
+}
+
+// Update order price function with animation for both increase and decrease
+function updateOrderPrice() {
+  const activeChoices = document.querySelectorAll('.choice-btn.active');
+  let totalOptionsPrice = 0;
+
+  // Loop through active choices to calculate total options price
+  activeChoices.forEach((choice) => {
+    const price = parseFloat(choice.dataset.price); // Convert price to a float
+    const clickCount = parseInt(choice.dataset.clickCount) || 1; // Ensure clickCount exists, default to 1
+
+    if (!isNaN(price)) {
+      totalOptionsPrice += price * clickCount; // Add price multiplied by click count
+    }
+  });
+
+  const orderPrice = document.querySelector('#order-price'); // Correct ID reference
+  if (!orderPrice) {
+    console.error('Order price element not found');
+    return;
+  }
+
+  const quantity = parseInt(quantityInput.value); // Get the current quantity
+  const totalItemPrice = baseItemPrice * quantity; // Calculate the total item price
+  const totalOrderPrice = totalItemPrice + totalOptionsPrice; // Calculate the total order price
+
+  const startPrice = parseFloat(orderPrice.textContent.replace(/\D+/g, '')) || 0; // Remove non-digits to get current price
+  const endPrice = totalOrderPrice;
+  const duration = 500; // 0.5 seconds for the animation
+
+  let startTime = null;
+
+  if (endPrice > startPrice) {
+    // If price increases
+    orderPrice.style.color = 'var(--emerald)';
+  } else if (endPrice < startPrice) {
+    // If price decreases
+    orderPrice.style.color = 'var(--poppy)';
+  }
+
+  // Animate the price change
+  function animatePrice(currentTime) {
+    if (!startTime) startTime = currentTime;
+    const elapsedTime = currentTime - startTime;
+    const progress = Math.min(elapsedTime / duration, 1); // Ensure progress doesn't exceed 1
+    const currentPrice = startPrice + (endPrice - startPrice) * progress;
+
+    orderPrice.innerHTML = `${Math.floor(currentPrice)} <span id="currency">EGP</span>`;
+
+    if (progress < 1) {
+      requestAnimationFrame(animatePrice); // Continue animation until complete
+    } else {
+      // Reset color after animation is complete
+      orderPrice.style.color = '';
+    }
+  }
+
+  requestAnimationFrame(animatePrice); // Start the price animation
 }
 
 // Toggle active class function
 function toggleActiveClass(event, optionsContainer) {
   const button = event.target;
-  const optionName = button.parentNode.parentNode.querySelector('p.align').textContent;
-  const optionButtons = button.parentNode.querySelectorAll('button.choice-btn');
-  const maxQuantity = parseInt(quantityInput.value);
+  const optionContainer = button.parentNode; // Get the main option container
+  const optionName = optionContainer.dataset.optionName; // Use data-option-name to identify the option
+  const optionButtons = optionContainer.querySelectorAll('button.choice-btn');
+  const maxQuantity = parseInt(quantityInput.value); // Get the value of #order-quantity
+  const activeCounts = parseInt(optionContainer.dataset.activeCounts); // Get Active-Counts for this option
   const currentActiveButtons = Array.from(optionButtons).filter((btn) => btn.classList.contains('active'));
-  const totalSelections = Array.from(currentActiveButtons).reduce((total, btn) => total + parseInt(btn.dataset.clickCount), 0);
+  const totalSelections = Array.from(currentActiveButtons).reduce((total, btn) => total + parseInt(btn.dataset.clickCount), 0); // Sum up the click counts
+  const attendToQuantity = optionContainer.dataset.attendToQuantity;
+
+  // Handle cases where Active-Counts is set to "N" or "-"
+  if (optionContainer.dataset.activeCounts === "N" || optionContainer.dataset.activeCounts === "-") {
+    return; // Skip processing if the Active-Counts is not relevant
+  }
+
+  // Log Active-Counts and calculated selection limit
+  console.log(`${optionName} - Active-Counts: ${activeCounts}, Selection Limit: ${activeCounts * maxQuantity}`);
 
   if (event.detail && event.detail.longPress) {
+    // If it's a long press, reset the button state
     button.classList.remove('active');
     button.dataset.clickCount = 0;
   } else {
+    // If the button is not active
     if (!button.classList.contains('active')) {
-      if (totalSelections < maxQuantity) {
+      // If the total selections are within the limit
+      if (attendToQuantity === 'Yes' && totalSelections >= activeCounts * maxQuantity) {
+        // Do nothing if the selection exceeds the limit
+      } else {
+        // Activate the button and set the click count to 1
         button.classList.add('active');
         button.dataset.clickCount = 1;
       }
     } else {
+      // Increment the click count if already active
       const newCount = parseInt(button.dataset.clickCount) + 1;
-      if (totalSelections + 1 <= maxQuantity) {
+      if (attendToQuantity === 'Yes' && totalSelections + 1 > activeCounts * maxQuantity) {
+        // Prevent exceeding the selection limit
+      } else {
+        // Update the click count
         button.dataset.clickCount = newCount;
       }
     }
   }
 
-  // Check if option is Active-Req and validate selection
-  if (button.required) {
-    const activeAllowed = parseInt(button.dataset.activeAllowed);
-    const activeMax = parseInt(button.dataset.activeMax);
-    const activeMin = parseInt(button.dataset.activeMin);
+  // If the option is required, validate the selection
+  if (optionContainer.dataset.activeReq === 'Yes') {
+    const activeMinCounts = parseInt(optionContainer.dataset.activeMinCounts); // Get the minimum counts
+    const activeMax = optionContainer.dataset.activeMax === 'N' ? Infinity : parseInt(optionContainer.dataset.activeMax); // Handle unlimited max
+    const activeMin = parseInt(optionContainer.dataset.activeMin); // Get the minimum allowed selections
     const currentSelections = Array.from(optionButtons).filter((btn) => btn.classList.contains('active')).length;
 
-    console.log(`Validating selection for ${optionName} with Active-Allowed: ${activeAllowed}, Active-Max: ${activeMax}, Active-Min: ${activeMin}, Current Selections: ${currentSelections}`);
-
+    // Check if the selection is within the allowed range
     if (currentSelections < activeMin || currentSelections > activeMax) {
       console.error(`Invalid selection for ${optionName}. Must select between ${activeMin} and ${activeMax} options.`);
-      button.classList.remove('active');
+      button.classList.remove('active'); // Deactivate if invalid
       button.dataset.clickCount = 0;
     }
   }
+}
+
+// Custom function for checking when the "Add" button is clicked
+document.getElementById('add-order').addEventListener('click', function() {
+  const optionGroups = document.querySelectorAll('.flex.row.wrap.gap');
+  const orderQuantity = parseInt(quantityInput.value);
+  let isValid = true;
+
+  optionGroups.forEach(optionGroup => {
+    const optionButtons = optionGroup.querySelectorAll('.choice-btn');
+    const optionName = optionGroup.previousElementSibling.textContent;
+    const activeReq = optionGroup.dataset.activeReq === 'Yes';
+    let activeMin = parseInt(optionGroup.dataset.activeMin);
+    let activeMax = parseInt(optionGroup.dataset.activeMax);
+    let activeMinCounts = parseInt(optionGroup.dataset.activeMinCounts);
+    let activeCounts = parseInt(optionGroup.dataset.activeCounts) || 0;
+
+    if (optionGroup.dataset.activeMin === "N" || optionGroup.dataset.activeMin === "-") {
+      activeMin = 0;
+    }
+    if (optionGroup.dataset.activeMax === "N" || optionGroup.dataset.activeMax === "-") {
+      activeMax = Infinity;
+    }
+    if (optionGroup.dataset.activeMinCounts === "N" || optionGroup.dataset.activeMinCounts === "-") {
+      activeMinCounts = 0;
+    }
+
+    const requiredActiveCounts = activeCounts * orderQuantity;
+    let activeButtonsCount = 0;
+
+    optionButtons.forEach(button => {
+      const clickCount = parseInt(button.dataset.clickCount) || 0;
+      if (clickCount > 0) {
+        activeButtonsCount += clickCount;
+      }
+    });
+
+    if (!activeReq && activeButtonsCount === 0) {
+      return;
+    }
+
+    if (activeMin > 0 && activeButtonsCount < activeMin) {
+      showAlert(`Please select at least ${activeMin} options for ${optionName}.`, true);
+      isValid = false;
+    }
+
+    if (activeMax > 0 && activeButtonsCount > activeMax) {
+      showAlert(`Please don't select more than ${activeMax} options for ${optionName}.`, true);
+      isValid = false;
+    }
+
+    if (activeReq && activeButtonsCount !== requiredActiveCounts) {
+      showAlert(`Please select exactly ${requiredActiveCounts} options for ${optionName}.`, true);
+      isValid = false;
+    }
+
+    if (activeMinCounts > 0 && activeButtonsCount < activeMinCounts) {
+      showAlert(`Please select at least ${activeMinCounts} choices for ${optionName}.`, true);
+      isValid = false;
+    }
+  });
+
+  if (isValid) {
+    const itemName = orderModalTitle.textContent;
+    const itemImgSrc = document.querySelector('#img-order-box img').src;
+    const itemPrice = orderPrice.textContent.replace(/\D+/g, '');
+    const quantity = parseInt(quantityInput.value);
+
+    const selectedOptions = [];
+    optionGroups.forEach(optionGroup => {
+      const optionButtons = optionGroup.querySelectorAll('.choice-btn');
+      optionButtons.forEach(button => {
+        const clickCount = parseInt(button.dataset.clickCount) || 0;
+        if (clickCount > 0) {
+          selectedOptions.push({ name: button.textContent, count: clickCount });
+        }
+      });
+    });
+
+    const receiptItem = document.createElement('div');
+    receiptItem.className = 'item-receipt flex row gap';
+
+    const receiptItemWrapper = document.createElement('div');
+    receiptItemWrapper.className = 'xr-731 flex row gap';
+    receiptItem.appendChild(receiptItemWrapper);
+
+    const receiptItemImage = document.createElement('img');
+    receiptItemImage.src = itemImgSrc;
+    receiptItemImage.alt = 'Item Image';
+    receiptItemImage.id = 'item-receipt-img';
+    receiptItemWrapper.appendChild(receiptItemImage);
+
+    const receiptItemDetails = document.createElement('div');
+    receiptItemDetails.className = 'w flex col';
+    receiptItemWrapper.appendChild(receiptItemDetails);
+
+    const receiptItemNameAndPrice = document.createElement('div');
+    receiptItemNameAndPrice.className = 'w flex row center between';
+    receiptItemDetails.appendChild(receiptItemNameAndPrice);
+
+    const receiptItemName = document.createElement('p');
+    receiptItemName.id = 'item-receipt-name';
+    receiptItemName.className = 'text';
+    receiptItemName.textContent = itemName;
+    receiptItemNameAndPrice.appendChild(receiptItemName);
+
+    const receiptItemPrice = document.createElement('span');
+    receiptItemPrice.id = 'item-receipt-price';
+    receiptItemPrice.className = 'text';
+    receiptItemPrice.innerHTML = `${itemPrice} <span id="currency">$</span>`;
+    receiptItemNameAndPrice.appendChild(receiptItemPrice);
+
+    const receiptItemOptions = document.createElement('div');
+    receiptItemOptions.id = 'item-receipt-options';
+    receiptItemOptions.className = 'text';
+
+    const maxVisibleOptions = 2;
+    selectedOptions.forEach((option, index) => {
+      if (index < maxVisibleOptions) {
+        const optionText = document.createElement('span');
+        optionText.innerHTML = `<span>${option.count}x</span> ${option.name}`;
+        receiptItemOptions.appendChild(optionText);
+        receiptItemOptions.appendChild(document.createElement('br'));
+      }
+    });
+
+    if (selectedOptions.length > maxVisibleOptions) {
+      const moreOptions = document.createElement('span');
+      moreOptions.textContent = `${selectedOptions.length - maxVisibleOptions} more`;
+      receiptItemOptions.appendChild(moreOptions);
+    }
+
+    receiptItemDetails.appendChild(receiptItemOptions);
+
+    const receiptItemComment = document.createElement('div');
+    receiptItemComment.id = 'item-receipt-comment';
+    receiptItemComment.className = 'w xs-732 text';
+    receiptItemComment.textContent = document.getElementById('order-comment').value; // Use the comment from #order-comment
+    receiptItemDetails.appendChild(receiptItemComment);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.id = 'delete-order';
+    deleteButton.innerHTML = '<img src="Backround/Icons/Trash.png" alt="Delete-Order">';
+    receiptItem.appendChild(deleteButton);
+
+    // Add the receipt item to the receipt
+    const receiptInfo = document.querySelector('.receipt-info');
+    receiptInfo.appendChild(receiptItem);
+
+    // Close the modal and reset it
+    const modal = document.querySelector('.order-modal');
+    modal.classList.add('off');
+    resetModal();
+
+    showAlert('Order added successfully!', false);
+  }
+});
+
+function ReceiptOptions() {
+  // Get the order list element
+  const orderList = document.getElementById('order-list');
+
+  // Check if the order list element exists before adding event listeners
+  if (orderList) {
+    // Add event listener to the order list element
+    orderList.addEventListener('click', function(event) {
+      // Check if the clicked element is the delete button
+      if (event.target.closest('#delete-order')) {
+        // Get the closest item receipt element
+        const itemReceipt = event.target.closest('.item-receipt');
+        
+        // If the item receipt element is found, remove it
+        if (itemReceipt) {
+          itemReceipt.remove();
+        }
+      }
+    });
+
+    // Add event listener for decrease button
+    document.addEventListener('click', function(event) {
+      if (event.target.closest('#item-receipt-decrease')) {
+        const itemReceipt = event.target.closest('.item-receipt');
+        const quantityElement = itemReceipt.querySelector('#item-receipt-quantity');
+        const priceElement = itemReceipt.querySelector('#item-receipt-price');
+        let currentQuantity = parseInt(quantityElement.textContent);
+        let currentPrice = parseFloat(priceElement.textContent.replace(/[^\d\.]/g, ''));
+
+        // Ensure quantity is not less than 1
+        if (currentQuantity > 1) {
+          const originalPrice = currentPrice / currentQuantity;
+          currentQuantity--;
+          quantityElement.textContent = currentQuantity.toString();
+          priceElement.textContent = originalPrice * currentQuantity + ' EGP';
+        } else {
+          // If quantity is 1, keep the original price
+          priceElement.textContent = currentPrice + ' EGP';
+        }
+      }
+    });
+
+    // Add event listener for increase button
+    document.addEventListener('click', function(event) {
+      if (event.target.closest('#item-receipt-increase')) {
+        const itemReceipt = event.target.closest('.item-receipt');
+        const quantityElement = itemReceipt.querySelector('#item-receipt-quantity');
+        const priceElement = itemReceipt.querySelector('#item-receipt-price');
+        let currentQuantity = parseInt(quantityElement.textContent);
+        let currentPrice = parseFloat(priceElement.textContent.replace(/[^\d\.]/g, ''));
+
+        // Increase quantity by 1
+        const originalPrice = currentPrice / currentQuantity;
+        currentQuantity++;
+        quantityElement.textContent = currentQuantity.toString();
+        priceElement.textContent = originalPrice * currentQuantity + ' EGP';
+      }
+    });
+  } else {
+    console.error('Order list element not found in the DOM.');
+  }
+}
+
+// Call the ReceiptOptions function
+ReceiptOptions();
+
+// Function to show an alert in the specified div
+function showAlert(message, isError) {
+  const alertDiv = document.querySelector('.alert');
+  const alertMessage = document.getElementById('alert');
+  const alertIcon = document.querySelector('.alert-icon');
+
+  // Remove any existing icon elements
+  while (alertIcon.firstChild) {
+    alertIcon.removeChild(alertIcon.firstChild);
+  }
+
+  alertMessage.textContent = message;
+  alertDiv.classList.remove('off');
+
+  // Create the icon element dynamically
+  let iconElement;
+  if (isError) {
+    iconElement = document.createElement('i');
+    iconElement.className = 'fa-solid fa-circle-xmark';
+  } else {
+    iconElement = document.createElement('i');
+    iconElement.className = 'fa-solid fa-check';
+  }
+  alertIcon.appendChild(iconElement);
+
+  if (isError) {
+    alertDiv.style.backgroundColor = 'var(--poppy)';
+  } else {
+    alertDiv.style.backgroundColor = 'var(--chartreuse)';
+  }
+
+  // Add event listener for closing the alert
+  alertDiv.addEventListener('click', function() {
+    alertDiv.classList.add('off');
+    // Remove the icon element when the alert is closed
+    while (alertIcon.firstChild) {
+      alertIcon.removeChild(alertIcon.firstChild);
+    }
+    alertMessage.textContent = '';
+  });
+
+  setTimeout(() => {
+    alertDiv.classList.add('off');
+    // Remove the icon element when the alert is closed
+    while (alertIcon.firstChild) {
+      alertIcon.removeChild(alertIcon.firstChild);
+    }
+    alertMessage.textContent = '';
+  }, 5000);
 }
 
 // Fetch Unsplash image function
@@ -350,27 +658,44 @@ decreaseButton.addEventListener('click', () => {
 
   if (currentQuantity > 1) {
     quantityInput.value = currentQuantity - 1;
-  }
 
-  if (currentQuantity - 1 < previousQuantity) {
-    document.querySelectorAll('.choice-btn.active').forEach((button) => {
+    // Update previous quantity
+    previousQuantity = parseInt(quantityInput.value);
+    
+    // Remove active classes from all choice buttons
+    document.querySelectorAll('.choice-btn').forEach((button) => {
       button.classList.remove('active');
       button.dataset.clickCount = 0; // Reset click count
     });
-  }
 
-  previousQuantity = parseInt(quantityInput.value); // Update previous quantity
+    // Update the item price based on the new quantity
+    updateItemPrice();
+  }
 });
 
 // Increase quantity button event listener
 increaseButton.addEventListener('click', () => {
   const currentQuantity = parseInt(quantityInput.value);
   quantityInput.value = currentQuantity + 1;
-  previousQuantity = currentQuantity + 1; // Update previous quantity
+
+  // Update previous quantity
+  previousQuantity = currentQuantity + 1;
+  // Update the item price based on the new quantity
+  updateItemPrice();
 });
+
+// Function to update item price based on current quantity
+function updateItemPrice() {
+  const currentQuantity = parseInt(quantityInput.value);
+  const totalItemPrice = baseItemPrice * currentQuantity;
+
+  // Update the total price with additional options if applicable
+  updateOrderPrice();
+}
 
 // Reset modal function
 function resetModal() {
+  // Clear all elements
   orderModalTitle.textContent = '';
   imgOrderBox.src = '';
   orderPrice.textContent = '';
@@ -378,12 +703,36 @@ function resetModal() {
   document.getElementById('order-kind-name').textContent = '';
   document.getElementById('options-container').innerHTML = '';
   quantityInput.value = '1';
+  
+  // Clear comments
+  document.getElementById('order-comment').value = '';
 
-  document.querySelectorAll('.choice-btn.active').forEach((button) => {
+  // Reset buttons
+  document.querySelectorAll('.choice-btn').forEach((button) => {
     button.classList.remove('active');
-    button.dataset.clickCount = 0;
+    button.dataset.clickCount = 0; // Reset click count
   });
+
+  // Reset previous quantity
+  previousQuantity = 1;
+
+  // Hide the modal
+  const modal = document.querySelector('.order-modal');
+  modal.classList.add('off');
 }
+
+// Close modal event listener
+document.addEventListener('DOMContentLoaded', function() {
+  const closeButton = document.getElementById('close-order-modal');
+  if (closeButton) {
+    closeButton.addEventListener('click', function() {
+      // ضع هنا الكود الخاص بك لإغلاق المودال أو العنصر
+      console.log('Close button clicked!');
+    });
+  } else {
+    console.error('Close button not found!');
+  }
+});
 
 // Attach modal event listeners function
 export function attachModalEventListeners(itemsHTML) {

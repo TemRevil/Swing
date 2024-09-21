@@ -36,10 +36,13 @@
 }
 
 :root {
-    --poppy: #d64045ff;
+    --poppy-lighted: #fda4a4ff;
+    --poppy: #ee2d2dff;
     --alice-blue: #eaf6ffff;
     --mint-cream: #f4fffdff;
     --mint-green: #e9fff9ff;
+    --chartreuse: #16db65ff;
+    --emerald: #2fbf71ff;
     --our-blue: #3395ffff;
     --picton-blue: #4ea5d9ff;
     --deep-sky-blue: #00bbf9ff;
@@ -158,6 +161,26 @@ hr {
     transition: 0.15s 0s ease-in-out;
 }
 /* ------------------------------------------ */
+/* Connection Checker */
+#connection-status {
+    width: fit-content;
+    padding: 10px;
+    font-family: 'Exo', 'Rubik', 'Cairo';
+    font-weight: bold;
+    font-size: 24px;
+    border-radius: 8px;
+    background-color: #d4ffc3;
+    color: #2dee3d;
+    cursor: pointer;
+    transition: 0.1s 0s ease-in-out;
+}
+#connection-status:hover {
+    background-color: #befda4;
+}
+#connection-status:active {
+    scale: 0.9;
+}
+/* ------------------------------------------ */
 .box {
     width: 450px;
     min-height: 250px;
@@ -175,17 +198,17 @@ hr {
 /* ------------------------------------------ */
 .red-btn {
     min-width: 50px;
-    padding: 5px;
-    background-color: transparent;
+    padding: 10px;
+    font-weight: bold;
+    background-color: var(--poppy-lighted);
     color: var(--poppy);
-    border: 2px var(--poppy) solid;
-    border-radius: 3px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.15s 0s ease-in-out;
+    transition: 0.1s 0s ease-in-out;
 }
 .red-btn:hover {
-    background-color: var(--poppy);
-    color: white;
+    background-color: #fd9696;
 }
 .red-btn:active {
     scale: 0.9;
@@ -221,6 +244,46 @@ hr {
 }
 .blue-btn-2:active {
     scale: 0.9;
+}
+/* ------------------------------------------ */
+/* Alert Box */
+.alert {
+    max-width: 320px;
+    height: fit-content;
+    min-height: 50px;
+    max-height: 80px;
+    align-items: center;
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    padding: 10px;
+    background: var(--our-blue);
+    backdrop-filter: blur(150px);
+    border-radius: 5px;
+    z-index: 10;
+}
+.alert-icon {
+    font-size: 24px;
+    color: white;
+}
+#alert {
+    font-size: 18px;
+    color: white;
+}
+.close-alert {
+    padding: 10px;
+    font-size: 24px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.close-alert:hover {
+    background-color: #ffffff13;
+}
+.close-alert:active {
+    scale: 0.95;
 }
 /* ------------------------------------------ */
 .wh {
