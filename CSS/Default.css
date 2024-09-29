@@ -163,7 +163,8 @@ hr {
 /* ------------------------------------------ */
 /* Connection Checker */
 #connection-status {
-    width: fit-content;
+    min-width: 140px;
+    min-height: 40px;
     padding: 10px;
     font-family: 'Exo', 'Rubik', 'Cairo';
     font-weight: bold;

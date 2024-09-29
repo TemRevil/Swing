@@ -481,23 +481,25 @@ document.getElementById('add-order').addEventListener('click', function() {
     const receiptItemPrice = document.createElement('span');
     receiptItemPrice.id = 'item-receipt-price';
     receiptItemPrice.className = 'text';
-    receiptItemPrice.innerHTML = `${itemPrice} <span id="currency">$</span>`;
+    receiptItemPrice.innerHTML = `${itemPrice} <span id="currency">EGP</span>`;
     receiptItemNameAndPrice.appendChild(receiptItemPrice);
 
     const receiptItemOptions = document.createElement('div');
     receiptItemOptions.id = 'item-receipt-options';
     receiptItemOptions.className = 'text';
-
+    
     const maxVisibleOptions = 2;
     selectedOptions.forEach((option, index) => {
       if (index < maxVisibleOptions) {
         const optionText = document.createElement('span');
         optionText.innerHTML = `<span>${option.count}x</span> ${option.name}`;
+        optionText.dataset.optionName = option.name; // Add data-option-name attribute
+        optionText.dataset.optionCount = option.count; // Add data-option-count attribute
         receiptItemOptions.appendChild(optionText);
         receiptItemOptions.appendChild(document.createElement('br'));
       }
     });
-
+    
     if (selectedOptions.length > maxVisibleOptions) {
       const moreOptions = document.createElement('span');
       moreOptions.textContent = `${selectedOptions.length - maxVisibleOptions} more`;
@@ -595,6 +597,45 @@ function ReceiptOptions() {
 
 // Call the ReceiptOptions function
 ReceiptOptions();
+
+document.getElementById('order-list').addEventListener('click', (event) => {
+  const itemReceipt = event.target.closest('.item-receipt');
+  if (itemReceipt) {
+    const itemName = itemReceipt.querySelector('#item-receipt-name').textContent.trim();
+    const itemOptionsElement = itemReceipt.querySelector('#item-receipt-options');
+    const itemOptions = Array.from(itemOptionsElement.children).map(option => option.textContent.trim());
+    const itemComment = itemReceipt.querySelector('#item-receipt-comment').textContent.trim();
+
+    console.log(`Item name: ${itemName}`);
+    console.log(`Options: ${itemOptions}`);
+    console.log(`Comment: ${itemComment}`);
+
+    const itemFound = Array.from(document.querySelectorAll('.item-box')).find(itemBox => {
+      return itemBox.querySelector('p#item-name').textContent.trim() === itemName;
+    });
+
+    if (itemFound) {
+      console.log(`Item "${itemName}" found in main menu!`);
+      openModal(itemFound, getItemData(itemFound));
+
+      // ضبط التعليق في الـ modal
+      const modalComment = document.querySelector('#order-comment');
+      modalComment.value = itemComment;
+
+      // لا يتم تعديل أو اختيار الخيارات هنا، فقط فتح الـ modal
+    } else {
+      console.log(`Item "${itemName}" not found in main menu.`);
+    }
+  }
+});
+
+// Assuming you have a function to get item data from the itemBox
+function getItemData(itemBox) {
+  const itemData = JSON.parse(itemBox.getAttribute('data-item-data'));
+  const options = itemData.options;
+
+  return { options };
+}
 
 // Function to show an alert in the specified div
 function showAlert(message, isError) {
