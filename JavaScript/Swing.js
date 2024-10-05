@@ -598,16 +598,25 @@ function ReceiptOptions() {
 // Call the ReceiptOptions function
 ReceiptOptions();
 
-document.getElementById('order-list').addEventListener('click', (event) => {
+document.getElementById('order-list').addEventListener('click', async (event) => {
   const itemReceipt = event.target.closest('.item-receipt');
   if (itemReceipt) {
     const itemName = itemReceipt.querySelector('#item-receipt-name').textContent.trim();
     const itemOptionsElement = itemReceipt.querySelector('#item-receipt-options');
-    const itemOptions = Array.from(itemOptionsElement.children).map(option => option.textContent.trim());
+    const itemOptions = Array.from(itemOptionsElement.children)
+                             .map(option => ({
+                               name: option.getAttribute('data-option-name'),
+                               count: option.getAttribute('data-option-count')
+                             }))
+                             .filter(option => option.name) // استبعاد العناصر التي لا تحتوي على خاصية data-option-name
+                             .map(option => ({
+                               name: option.name.trim(),
+                               count: option.count ? parseInt(option.count.trim()) : 1
+                             }));
     const itemComment = itemReceipt.querySelector('#item-receipt-comment').textContent.trim();
 
     console.log(`Item name: ${itemName}`);
-    console.log(`Options: ${itemOptions}`);
+    console.log(`Options: ${itemOptions.map(option => option.name)}`);
     console.log(`Comment: ${itemComment}`);
 
     const itemFound = Array.from(document.querySelectorAll('.item-box')).find(itemBox => {
@@ -616,13 +625,21 @@ document.getElementById('order-list').addEventListener('click', (event) => {
 
     if (itemFound) {
       console.log(`Item "${itemName}" found in main menu!`);
-      openModal(itemFound, getItemData(itemFound));
+      await openModal(itemFound, getItemData(itemFound));
 
       // ضبط التعليق في الـ modal
       const modalComment = document.querySelector('#order-comment');
       modalComment.value = itemComment;
 
-      // لا يتم تعديل أو اختيار الخيارات هنا، فقط فتح الـ modal
+      // تحديد الخيارات السابقة في الـ modal
+      itemOptions.forEach(option => {
+        const optionButton = Array.from(document.querySelectorAll('.choice-btn')).find(btn => btn.textContent.trim() === option.name);
+        if (optionButton) {
+          optionButton.classList.add('active');
+          optionButton.setAttribute('data-click-count', option.count);
+        }
+      });
+
     } else {
       console.log(`Item "${itemName}" not found in main menu.`);
     }

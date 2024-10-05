@@ -75,7 +75,7 @@
         </div>
         <button class="close-alert transition"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="wh flex center order-modal off">
+    <div class="wh flex center order-modal">
         <div class="modal">
             <div class="box flex col">
                 <div id="order-div-cover">
@@ -96,7 +96,7 @@
                     <input type="text" value="1" id="order-quantity" class="text">
                     <button class="blue-btn text" id="increase-quantity"><i class="fa-solid fa-plus"></i></button>
                   </div>
-                  <div id="options-container"><!-- Item Options Comes From Firebase --></div>
+                  <div id="options-container" class="flex col gap"><!-- Item Options Comes From Firebase --></div>
                   <div class="flex col gap xs-732">
                     <p class="align">Comments</p>
                     <textarea id="order-comment" class="text transition"></textarea>
@@ -106,6 +106,7 @@
                   <p id="order-price" class="align price"><!-- Item Price --></p>
                   <div class="flex row gap">
                     <button id="close-order-modal" class="blue-btn-2 text">Close</button>
+                    <button id="edit-order" class="blue-btn-2 text off">Edit</button>
                     <button id="add-order" class="blue-btn-2 text">Add</button>
                   </div>
                 </div>
