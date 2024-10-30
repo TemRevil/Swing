@@ -127,12 +127,13 @@ nav {
     justify-content: center;
 }
 #item-receipt-comment {
+    max-height: 20px;
     margin-top: 10px;
     font-size: 18px;
     display: -webkit-box;
-    word-break: break-word;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 #delete-order {
     width: 11%;
@@ -153,37 +154,79 @@ nav {
 #delete-order img {
     width: 100%;
 }
-.receipt-price {
-    width: 92%;
+.receipt-fees {
+    width: 95%;
     position: absolute;
     bottom: 25px;
 }
+#receipt-fees-box {
+    width: 100%;
+    height: 75px;
+    padding: 20px;
+    background-color: #EAF6FF;
+    border-radius: 15px;
+    overflow: hidden;
+}
+#advanced-fees {
+    width: fit-content;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    font-size: 26px !important;
+    cursor: pointer;
+}
+#advanced-fees:active {
+    scale: 0.95;
+}
+#receipt-fees-box .text {
+    font-size: 16px;
+}
 .pay-btn {
-    padding: 10px 20px;
+    height: 45px;
+    position: relative;
     background-color: var(--deep-sky-blue);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.15s 0s ease-in-out;
+    overflow: hidden;
 }
 .pay-btn:active {
     background-color: var(--our-blue);
     scale: 0.95;
 }
 #price {
-    margin-right: 10px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    transition: 0.2s 0s ease-in-out;
+}
+.pay-btn:hover #price {
+    top: -50px;
+}
+#pay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50px;
+    transition: 0.2s 0s ease-in-out;
+}
+.pay-btn:hover #pay {
+    top: 0px;
 }
 /* ------------------------------------------ */
 .order-modal .box {
     width: 720px;
     position: relative;
     padding: 0px;
-    overflow: hidden;
 }
 #order-div-cover {
     height: 250px;
     position: relative;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     overflow: hidden;
 }
 #order-cover {
@@ -293,7 +336,7 @@ nav {
     border: 2px #3395ff solid;
     border-radius: 8px;
 }
-.add-order {
+.order-controls {
     width: 100%;
     height: 90px;
     position: absolute;
@@ -301,6 +344,8 @@ nav {
     bottom: 0;
     padding: 10px 20px;
     background-color: #bde0ff;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 .blue-btn-2 {
     font-size: 26px;

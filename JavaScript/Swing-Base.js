@@ -97,57 +97,72 @@ document.addEventListener('click', (e) => {
 });
 // -----------------------------------------
 // Restaurant Database Collecting
-// Function to create divs based on button IDs
 import { attachModalEventListeners } from './Swing.js';
 
+// Function to create divs based on button IDs
 function createDivsBasedOnButtons() {
   const menuKindsContainer = document.getElementById('menu-kinds');
   const mainMenuContainer = document.getElementById('main-menu');
-  
-  // Iterate over each button in the menu kinds container and create a corresponding div in the main menu container
+
+  // Iterate over each button in the menu kinds container
   Array.from(menuKindsContainer.getElementsByClassName('kind-box')).forEach(button => {
-    mainMenuContainer.appendChild(document.createElement('div')).className = `${button.id.toLowerCase().replace(' ', '-')} flex row gap off`;
+    const newDiv = document.createElement('div');
+    newDiv.className = `${button.id.toLowerCase().replace(' ', '-')} flex row gap off`;
+    mainMenuContainer.appendChild(newDiv);
   });
 }
 
-// Function to fetch and display items for a given category
 async function fetchAndDisplayItems(categoryId) {
   const username = localStorage.getItem('username');
   const categoryDocSnapshot = await getDoc(doc(db, `re-data/${username}/Menu/${categoryId}`));
 
   if (categoryDocSnapshot.exists()) {
     const categoryData = categoryDocSnapshot.data();
-    const itemsHTML = await Promise.all(Object.keys(categoryData).map(async itemName => {
+
+    // Sort item names alphabetically
+    const sortedItemNames = Object.keys(categoryData).sort((a, b) => a.localeCompare(b));
+
+    // Generate HTML for items
+    const itemsHTML = await Promise.all(sortedItemNames.map(async itemName => {
       const itemData = categoryData[itemName];
 
       // Get image URL from Firebase Storage, fallback to local image if not found
-      const itemImg = await getDownloadURL(ref(storage, `${username}/Menu/${categoryId}/${itemName}.png`)).catch(() => `/Backround/Menu/${itemName}.png`);
+      const itemImg = await getDownloadURL(ref(storage, `${username}/Menu/${categoryId}/${itemName}.png`))
+        .catch(() => `/Backround/Menu/${itemName}.png`);
 
       // Store options in item data (if available)
-      let options = {};
-      if (itemData.Options) {
-        options = itemData.Options;
-      }
+      const options = itemData.Options || {};
+
+      // Retrieve item price from Fees
+      const itemPrice = itemData.Fees?.Price || 0; // Using optional chaining for cleaner code
+
+      // Add fees data attribute
+      const feesData = JSON.stringify(itemData.Fees) || '{}';
 
       return {
         html: `
-          <div class="item-box flex col between" data-item-data='${JSON.stringify({ ...itemData, options })}'>
+          <div class="item-box flex col between" 
+               data-item-data='${JSON.stringify({ ...itemData, options })}' 
+               data-item-fees='${feesData}'>
             <p class="text" id="item-name">${itemName}</p>
             <div class="img"><img src="${itemImg}" alt="#"></div>
-            <p class="flex text" id="item-price">${itemData.Price || 0} EPG</p>
+            <p class="flex text" id="item-price">${itemPrice} EPG</p>
           </div>
         `,
         options: options,
         name: itemName,
-        price: itemData.Price || 0
+        price: itemPrice
       };
     }));
 
-    // Find the corresponding div in the main menu container and set its innerHTML
-    document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`).innerHTML = itemsHTML.map(item => item.html).join('');
+    // Update the main menu container with the generated HTML
+    const mainMenuDiv = document.getElementById('main-menu').querySelector(`.${categoryId.toLowerCase().replace(' ', '-')}`);
+    mainMenuDiv.innerHTML = itemsHTML.map(item => item.html).join('');
 
     // Attach event listeners to new item-box elements after they are added to the DOM
     attachModalEventListeners(itemsHTML);
+  } else {
+    console.error('Category document does not exist');
   }
 }
 
@@ -157,23 +172,24 @@ const menuRef = collection(db, `re-data/${username}/Menu`);
 
 getDocs(menuRef).then(querySnapshot => {
   // Generate HTML for menu kinds buttons
-  document.getElementById('menu-kinds').innerHTML = querySnapshot.docs.map(doc => `
+  const menuKindsHTML = querySnapshot.docs.map(doc => `
     <button class="kind-box flex center text" id="${doc.id}">
       ${doc.id.replace('-', ' ')}
     </button>
   `).join('');
-  
+
+  document.getElementById('menu-kinds').innerHTML = menuKindsHTML;
   createDivsBasedOnButtons();
-  
+
   // Add event listeners to kind buttons
-  Array.from(document.getElementById('menu-kinds').getElementsByClassName('kind-box')).forEach(button => {
-    button.addEventListener('click', () => {
-      fetchAndDisplayItems(button.id);
-    });
+  const kindButtons = document.getElementById('menu-kinds').getElementsByClassName('kind-box');
+  Array.from(kindButtons).forEach(button => {
+    button.addEventListener('click', () => fetchAndDisplayItems(button.id));
   });
-  
+
   // Dispatch custom event to indicate menu data has been loaded
   window.dispatchEvent(new Event('menuDataLoaded'));
 }).catch(error => console.error('Error collecting menu data:', error));
 
+// Export the fetchAndDisplayItems function
 export { fetchAndDisplayItems };

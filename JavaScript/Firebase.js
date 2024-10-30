@@ -54,6 +54,49 @@ async function checkFirebaseConnection() {
 window.addEventListener('load', () => {
   checkFirebaseConnection();
   // Check connection every 30 seconds
-  setInterval(checkFirebaseConnection, 30000);
+  setInterval(checkFirebaseConnection, 15000);
 });
 // -----------------------------------------
+// Dropdown-Defaults
+document.addEventListener("DOMContentLoaded", () => {
+  const dropdownButton = document.querySelector(".dropdown-button");
+  const dropdownMenu = document.querySelector(".dropdown-menu");
+  const dropdownItems = document.querySelectorAll(".dropdown-item");
+  const selectedOption = document.querySelector(".selected-option");
+
+  let selectedElement = null;
+
+  dropdownButton.addEventListener("click", () => {
+    dropdownMenu.classList.toggle("show");
+  });
+
+  dropdownItems.forEach((item) => {
+    const button = item.querySelector("button"); // Get the button inside the dropdown item
+
+    button.addEventListener("click", () => {
+      // Remove comment from previously selected element
+      if (selectedElement) {
+        selectedElement.innerHTML = selectedElement.innerHTML.replace(/<!--|-->/g, '').trim();
+      }
+
+      // Set the new selected element
+      selectedElement = item;
+
+      // Wrap the new selected element's button in comments
+      button.outerHTML = `<!-- ${button.outerHTML} -->`;
+
+      // Update selected option with the button's HTML
+      selectedOption.innerHTML = `<button id="${button.id}" class="${button.className}">${button.textContent}</button>`;
+
+      dropdownMenu.classList.remove("show");
+    });
+  });
+
+  // Initialize with the first dropdown item
+  if (dropdownItems.length > 0) {
+    selectedElement = dropdownItems[0];
+    const initialButton = selectedElement.querySelector("button");
+    initialButton.outerHTML = `<!-- ${initialButton.outerHTML} -->`;
+    selectedOption.innerHTML = `<button id="${initialButton.id}" class="${initialButton.className}">${initialButton.textContent}</button>`;
+  }
+});

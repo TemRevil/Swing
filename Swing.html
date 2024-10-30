@@ -60,9 +60,13 @@
                             <button id="delete-order"><img src="Backround/Icons/Trash.png" alt="Delete-Order"></button>
                         </div> -->
                     </div>
-                    <div class="receipt-price">
-                        <hr>
-                        <button class="pay-btn w text"><span id="price">1290EGP</span>PAY</button>
+                    <div class="receipt-fees flex col gap">
+                        <div class="w flex col between gap" id="receipt-fees-box">
+                            <button class="text transition" id="advanced-fees">Advanced Fees</button>
+                            <p class="w flex between text">SUBTOTAL : <span id="subtotal"></span></p>
+                            <div id="advanced-fees-box" class="flex col gap"></div> <!-- Ensure this element exists -->
+                        </div>
+                        <button class="pay-btn w flex col center text"><span id="price" class="flex center">1545</span><span id="pay" class="flex center">PAY</span></button>
                     </div>
                 </div>
             </section>
@@ -75,7 +79,7 @@
         </div>
         <button class="close-alert transition"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="wh flex center order-modal">
+    <div class="wh flex center order-modal off">
         <div class="modal">
             <div class="box flex col">
                 <div id="order-div-cover">
@@ -102,16 +106,27 @@
                     <textarea id="order-comment" class="text transition"></textarea>
                   </div>
                 </div>
-                <div class="add-order flex row center between">
+                <div class="order-controls flex row center between">
                   <p id="order-price" class="align price"><!-- Item Price --></p>
                   <div class="flex row gap">
                     <button id="close-order-modal" class="blue-btn-2 text">Close</button>
-                    <button id="edit-order" class="blue-btn-2 text off">Edit</button>
                     <button id="add-order" class="blue-btn-2 text">Add</button>
-                  </div>
+                    <div class="dropdown-container off" id="dropdown-of-orders-modal">
+                        <div class="selected-option text"><!-- Selected Option Shows Here --></div>
+                        <button class="dropdown-button text">
+                            <i class="fas fa-caret-down transition"></i>
+                        </button>
+                        <div class="dropdown-menu transition">
+                            <div class="dropdown-item text">
+                                <!-- Drop-Down-Options -->
+                                <button id="edit-order" class="blue-btn-2 text">Edit</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="wh flex center logout-modal off">
         <div class="modla">
@@ -132,4 +147,4 @@
     <script type="module" src="JavaScript/Swing-Base.js"></script>
     <script type="module" src="JavaScript/Swing.js"></script>
 </body>
-</html> 
+</html>

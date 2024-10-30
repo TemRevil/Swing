@@ -165,6 +165,9 @@ hr {
 #connection-status {
     min-width: 140px;
     min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 10px;
     font-family: 'Exo', 'Rubik', 'Cairo';
     font-weight: bold;
@@ -287,6 +290,73 @@ hr {
     scale: 0.95;
 }
 /* ------------------------------------------ */
+/* Dropdown Defaults */
+.dropdown-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+.dropdown-container .selected-option button {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 8px 0 0 0;
+}
+.dropdown-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+.selected-option {
+    width: fit-content;
+    min-width: 135px;
+    max-width: 135px;
+    padding: 5px 10px;
+    background-color: var(--our-blue);
+    color: #fff;
+    border-radius: 8px 0 0 0;
+    text-align: center;
+    cursor: pointer;
+}
+.dropdown-button {
+    width: 40px;
+    background-color: var(--our-blue);
+    color: #fff;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+}
+.dropdown-menu {
+    width: 135px;
+    height: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    background-color: var(--our-blue);
+    border-radius: 0 0 8px 8px;
+    transition: 0.2s 0s ease-in-out;
+    overflow: hidden;
+}
+.dropdown-menu.show {
+    height: fit-content;
+}
+.dropdown-item {
+    width: 100%;
+    padding: 5px;
+    color: white;
+    font-size: 22px !important;
+    cursor: pointer;
+}
+.dropdown-item:hover {
+    background-color: var(--our-blue);
+}
+.dropdown-item.active {
+    background-color: var(--our-blue);
+    color: #fff;
+}
+/* ------------------------------------------ */
 .wh {
     width: 100%;
     height: 100%;
@@ -297,8 +367,5 @@ hr {
     bottom: 0;
     z-index: 5;
     background-color: #0e0e3391;
-    overflow: hidden;
-}
-.modal {
     overflow: auto;
 }
